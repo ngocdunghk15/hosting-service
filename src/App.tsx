@@ -4,6 +4,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRouting from '~/routes';
 
+import './styles/sass/style.scss';
+
 function App() {
   return (
     <Provider store={store}>
