@@ -2,8 +2,10 @@ import { Provider } from 'react-redux';
 import { persistor, store } from '~/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import AppRouting from '~/routes';
+import 'antd-css-utilities/utility.min.css';
 
+import AppRouting from '~/routes';
+import ThemeProvider from '~/providers/ThemeProvider';
 import './styles/sass/style.scss';
 
 function App() {
@@ -11,9 +13,11 @@ function App() {
     <Provider store={store}>
       {/*TODO: Loading app screen*/}
       <PersistGate loading={<>Loading...</>} persistor={persistor}>
-        <Router>
-          <AppRouting />
-        </Router>
+        <ThemeProvider>
+          <Router>
+            <AppRouting />
+          </Router>
+        </ThemeProvider>
       </PersistGate>
     </Provider>
   );
