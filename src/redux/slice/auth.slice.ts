@@ -1,11 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { Status } from '~/enum/app.enum.ts';
 
 export interface AuthSliceState {
   isLoggedIn: boolean;
+  accessToken: string;
+  refreshToken: string;
+  status: Status;
 }
 
 export const initialAuthState: AuthSliceState = {
-  isLoggedIn: false
+  isLoggedIn: false,
+  accessToken: '',
+  refreshToken: '',
+  status: Status.IDLE
 };
 
 export const authSlice = createSlice({
@@ -18,3 +25,6 @@ export const authSlice = createSlice({
     })
   }
 });
+
+export const { setAuthState } = authSlice.actions;
+
