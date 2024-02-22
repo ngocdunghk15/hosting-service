@@ -17,14 +17,14 @@ function WebCreatePage() {
         <Radio.Group size={'large'} className={'w-full'} buttonStyle='solid'>
           <Space direction='vertical' className={'w-full'}>
             <Form.Item>
-              <Card className={'w-full'} bodyStyle={{ padding: 0 }}>
+              <Card bordered={false} className={'w-full'} bodyStyle={{ padding: 0 }}>
                 <Radio className={'w-full'} style={{ padding: 24 }} value={1}>
                   Build and deploy from a Git repository
                 </Radio>
               </Card>
             </Form.Item>
             <Form.Item>
-              <Card className={'w-full'} bodyStyle={{ padding: 0 }}>
+              <Card bordered={false} className={'w-full'} bodyStyle={{ padding: 0 }}>
                 <Radio className={'w-full'} style={{ padding: 24 }} value={2}>
                   Deploy an existing image from a registry
                 </Radio>
