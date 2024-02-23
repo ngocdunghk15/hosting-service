@@ -1,4 +1,4 @@
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Layout, Menu, theme } from 'antd';
 import { Outlet } from 'react-router-dom';
 
 const { Header, Footer, Content } = Layout;
@@ -46,9 +46,6 @@ function AppLayout() {
             minHeight: 380,
             background: 'transparent',
             borderRadius: borderRadiusLG,
-            maxWidth: 768,
-            marginLeft: 'auto',
-            marginRight: 'auto'
           }}
         >
           <Outlet />
