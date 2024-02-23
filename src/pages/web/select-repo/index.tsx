@@ -129,7 +129,9 @@ function WebSelectRepoPage() {
             </Typography.Text>
             <Space.Compact className={'w-full mt-6 flex items-center'}>
               <Input placeholder={'https://github.com/uet-hosting-examples/repository-name'} />
-              <Button type={'primary'}>Import</Button>
+              <Button disabled type={'primary'}>
+                Import
+              </Button>
             </Space.Compact>
           </Card>
         </Col>
@@ -139,10 +141,10 @@ function WebSelectRepoPage() {
               Git provider configuration
             </Typography.Title>
             <div className={'flex flex-col gap-6'}>
-              <Button  block icon={<FontAwesomeIcon icon={faGithub} />}>
+              <Button block icon={<FontAwesomeIcon icon={faGithub} />}>
                 Connect to Github
               </Button>
-              <Button danger  block icon={<FontAwesomeIcon icon={faGitlab} />}>
+              <Button danger block icon={<FontAwesomeIcon icon={faGitlab} />}>
                 Disconnect to Gitlab
               </Button>
             </div>
