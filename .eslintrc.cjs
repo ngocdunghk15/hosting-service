@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  env: {browser: true, es2020: true},
+  env: { browser: true, es2020: true },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -10,12 +10,14 @@ module.exports = {
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs', 'vite.config.ts'],
   parser: '@typescript-eslint/parser',
-  plugins: ['react-refresh', 'prettier'],
+  plugins: ['react-refresh', 'prettier', 'unused-imports'],
   rules: {
-    '@typescript-eslint/no-explicit-any': "off",
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
     'react-refresh/only-export-components': [
       'warn',
-      {allowConstantExport: true},
+      { allowConstantExport: true }
     ],
     'prettier/prettier': [
       'warn',
@@ -30,6 +32,19 @@ module.exports = {
         printWidth: 120,
         jsxSingleQuote: true
       }
+    ],
+    'no-unused-vars': ['warn',
+      { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': false }
+    ],
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        'vars': 'all',
+        'varsIgnorePattern': '^_',
+        'args': 'after-used',
+        'argsIgnorePattern': '^_'
+      }
     ]
-  },
-}
+
+  }
+};

@@ -7,17 +7,20 @@ import 'antd-css-utilities/utility.min.css';
 import AppRouting from '~/routes';
 import ThemeProvider from '~/providers/ThemeProvider';
 import './styles/sass/style.scss';
+import { SnackbarProvider } from 'notistack';
 
 function App() {
   return (
     <Provider store={store}>
       {/*TODO: Loading app screen*/}
       <PersistGate loading={<>Loading...</>} persistor={persistor}>
-        <ThemeProvider>
-          <Router>
-            <AppRouting />
-          </Router>
-        </ThemeProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Router>
+              <AppRouting />
+            </Router>
+          </ThemeProvider>
+        </SnackbarProvider>
       </PersistGate>
     </Provider>
   );

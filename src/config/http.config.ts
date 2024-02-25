@@ -1,7 +1,7 @@
 import { CreateAxiosConfigs } from '~/types/http.type.ts';
-import { API_ENDPOINT } from '~/config/env.config.ts';
+import { VITE_API_ENDPOINT } from '~/config/env.config.ts';
 
 export const axiosConfigs: CreateAxiosConfigs = {
-  baseURL: API_ENDPOINT,
+  baseURL: VITE_API_ENDPOINT,
   timeout: 15000
 };
