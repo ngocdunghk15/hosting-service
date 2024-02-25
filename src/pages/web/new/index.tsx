@@ -23,7 +23,7 @@ function WebNewPage() {
         </Typography.Text>
       </div>
       <Card bordered={false}>
-        <Form form={form} initialValues={{ envVars: [''] }}>
+        <Form form={form} initialValues={{ envVars: [''], runtime: Runtime.NODE }}>
           <Row gutter={[32, 24]}>
             <Col span={24}>
               <Typography.Title className={'mb-0'} level={5}>
@@ -80,7 +80,6 @@ function WebNewPage() {
             <Col span={16}>
               <Form.Item name={'runtime'}>
                 <Select
-                  defaultValue={'docker'}
                   options={[
                     {
                       label: 'Docker',
@@ -107,7 +106,7 @@ function WebNewPage() {
                 <Col span={16}>
                   <Form.Item name={'buildCmd'}>
                     <Input
-                      prefix={'$'}
+                      prefix={'>_'}
                       defaultValue={'yarn --frozen-lockfile install; yarn build'}
                       spellCheck={false}
                     />
@@ -123,7 +122,7 @@ function WebNewPage() {
                 </Col>
                 <Col span={16}>
                   <Form.Item name={'buildCmd'}>
-                    <Input prefix={'$'} defaultValue={'yarn start'} spellCheck={false} />
+                    <Input prefix={'>_'} defaultValue={'yarn start'} spellCheck={false} />
                   </Form.Item>
                 </Col>
               </>
