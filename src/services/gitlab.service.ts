@@ -42,6 +42,10 @@ class GitlabService {
   public getAccountInfo = async () => {
     return await httpService.get('/gitlab/user-info');
   };
+
+  public getAllProjects = async () => {
+    return await httpService.get('/gitlab/get-all-projects');
+  };
 }
 
 export const gitlabService = new GitlabService();

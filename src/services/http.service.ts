@@ -23,10 +23,8 @@ class HttpService {
   private onRequest = async (config: HttpInternalRequestConfig) => {
     const accessToken = store.getState().auth.accessToken;
     if (!config?.isPublicApi) {
-      console.log({ accessToken });
       const decodedAccessToken: any = jwtDecode(accessToken);
       const isAccessTokenExpired = decodedAccessToken.exp * 1000 < new Date().getTime();
-      console.log({ isAccessTokenExpired });
       if (isAccessTokenExpired) {
         await this.handleRefreshToken();
       }

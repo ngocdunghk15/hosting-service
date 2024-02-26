@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import ConnectGitlabButton from '~/components/Services/SelectRepo/ConnectGitlabButton';
 import { useEffect } from 'react';
 import { gitlabService } from '~/services/gitlab.service.ts';
+import { useAppSelector } from '~/redux/store';
 
 const { Search } = Input;
 
@@ -15,6 +16,7 @@ interface SelectRepoProps {
 
 export default function SelectRepo(props: SelectRepoProps) {
   const navigate = useNavigate();
+  const isConnectedToGitlab = useAppSelector((state) => state.gitlab.isConnected);
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
   };
@@ -55,8 +57,10 @@ export default function SelectRepo(props: SelectRepoProps) {
   ];
 
   useEffect(() => {
-    gitlabService.getAccountInfo();
-  }, []);
+    if (isConnectedToGitlab) {
+      gitlabService.getAllProjects();
+    }
+  }, [isConnectedToGitlab]);
 
   return (
     <Row gutter={[16, 16]}>

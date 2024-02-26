@@ -1,9 +1,13 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useAppSelector } from '~/redux/store';
 import { useIsClient } from '~/hooks/useIsClient';
 
-function RequiredAuthProvider() {
+interface RequiredAuthProviderProps {
+  children: ReactNode;
+}
+
+function RequiredAuthProvider(props: RequiredAuthProviderProps) {
   const navigate = useNavigate();
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
   const isClient = useIsClient();
@@ -16,11 +20,7 @@ function RequiredAuthProvider() {
 
   if (!isClient) return <>Loading...</>;
 
-  return (
-    <>
-      <Outlet />
-    </>
-  );
+  return <>{props?.children || <Outlet />}</>;
 }
 
 export default RequiredAuthProvider;

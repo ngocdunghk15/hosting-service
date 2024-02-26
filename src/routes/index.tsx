@@ -4,11 +4,19 @@ import HomePage from '~/pages';
 import WebRoutes from '~/routes/web';
 import AppLayout from '~/layout/AppLayout';
 import RequiredAuthProvider from '~/providers/RequiredAuthProvider';
+import AppAuthenticatedLoader from '~/providers/AppAuthenticatedLoader';
 
 export default function AppRouting() {
   return (
     <Routes>
-      <Route path={''} element={<RequiredAuthProvider />}>
+      <Route
+        path={''}
+        element={
+          <RequiredAuthProvider>
+            <AppAuthenticatedLoader />
+          </RequiredAuthProvider>
+        }
+      >
         <Route path={''} element={<AppLayout />}>
           <Route path={'/'} element={<HomePage />} />
           <Route path={'/web/*'} element={<WebRoutes />} />
