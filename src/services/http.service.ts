@@ -23,9 +23,10 @@ class HttpService {
   private onRequest = async (config: HttpInternalRequestConfig) => {
     const accessToken = store.getState().auth.accessToken;
     if (!config?.isPublicApi) {
-      console.log({accessToken})
+      console.log({ accessToken });
       const decodedAccessToken: any = jwtDecode(accessToken);
       const isAccessTokenExpired = decodedAccessToken.exp * 1000 < new Date().getTime();
+      console.log({ isAccessTokenExpired });
       if (isAccessTokenExpired) {
         await this.handleRefreshToken();
       }
@@ -58,7 +59,7 @@ class HttpService {
         store.dispatch(setAuthState({ ...initialAuthState }));
         window?.location?.replace('/auth/sign-in');
       }
-      const response = (await axios.post(`${this.configs?.baseURL}auth/refresh-token`, { refreshToken: refreshToken }))
+      const response = (await axios.post(`${this.configs?.baseURL}/auth/refresh`, { refreshToken: refreshToken }))
         ?.data;
       store.dispatch(
         setAuthState({

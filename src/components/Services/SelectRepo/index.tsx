@@ -1,8 +1,11 @@
 import { Avatar, Button, Card, Col, Divider, Form, Input, List, Row, Select, Space, Typography } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub, faGitlab } from '@fortawesome/free-brands-svg-icons';
-import { Service } from '~/enum/app.enum';
+import { Service } from '~/enum/app.enum.ts';
 import { useNavigate } from 'react-router-dom';
+import ConnectGitlabButton from '~/components/Services/SelectRepo/ConnectGitlabButton';
+import { useEffect } from 'react';
+import { gitlabService } from '~/services/gitlab.service.ts';
 
 const { Search } = Input;
 
@@ -50,6 +53,10 @@ export default function SelectRepo(props: SelectRepoProps) {
       title: 'Git repository 8'
     }
   ];
+
+  useEffect(() => {
+    gitlabService.getAccountInfo();
+  }, []);
 
   return (
     <Row gutter={[16, 16]}>
@@ -151,9 +158,7 @@ export default function SelectRepo(props: SelectRepoProps) {
             <Button block icon={<FontAwesomeIcon icon={faGithub} />}>
               Connect to Github
             </Button>
-            <Button danger block icon={<FontAwesomeIcon icon={faGitlab} />}>
-              Disconnect to Gitlab
-            </Button>
+            <ConnectGitlabButton />
           </div>
         </Card>
       </Col>

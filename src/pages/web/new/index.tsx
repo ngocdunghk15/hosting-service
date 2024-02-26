@@ -68,7 +68,9 @@ function WebNewPage() {
                 <Input placeholder={'./'} />
               </Form.Item>
             </Col>
-            <Divider className={'my-0'} />
+            <Col span={24}>
+              <Divider className={'my-0'} />
+            </Col>
             <Col span={24}>
               <Typography.Title className={'mb-0'} level={5}>
                 Build Configuration
@@ -127,7 +129,9 @@ function WebNewPage() {
                 </Col>
               </>
             )}
-            <Divider className={'my-0'} />
+            <Col span={24}>
+              <Divider className={'my-0'} />
+            </Col>
             <Col span={24}>
               <Typography.Title className={'mb-0'} level={5}>
                 Environment Variables
@@ -185,10 +189,12 @@ function WebNewPage() {
                 )}
               </Form.List>
             </Col>
-            <Divider className={'my-0'} />
-            <div className={'flex justify-end w-full'}>
+            <Col span={24}>
+              <Divider className={'my-0'} />
+            </Col>
+            <Col span={24} className={'flex justify-end '}>
               <Button type={'primary'}>Build & Deploy Web Service</Button>
-            </div>
+            </Col>
           </Row>
         </Form>
       </Card>

@@ -1,16 +1,21 @@
 import { Alert, Spin } from 'antd';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { jwtService } from '~/services/jwt.service';
 import { useSnackbar } from 'notistack';
 import { GetAuthUrlOptions, gitlabService } from '~/services/gitlab.service';
-import { GitlabStateAction } from '~/enum/app.enum';
+import { GitlabKey, GitlabStateAction } from '~/enum/app.enum';
+import { useLocalStorage } from '~/hooks/useLocalStorage.ts';
+import { GITLAB_REDIRECT_URI } from '~/config/gitlab.config.ts';
 
 function AuthGitlabCallback() {
+  const [, setIsConnected] = useLocalStorage(GitlabKey.IS_CONNECTED, false);
   const [searchParams] = useSearchParams();
   const code = searchParams.get('code');
   const state = searchParams.get('state');
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+
   useEffect(() => {
     try {
       if (!code || !state) {
@@ -18,10 +23,14 @@ function AuthGitlabCallback() {
       }
       const decodedState: GetAuthUrlOptions['state'] = jwtService.decode(state!);
       const actionType = decodedState?.action;
+      const redirectPath = decodedState?.redirect_path;
+
       switch (actionType) {
         case GitlabStateAction.CONNECT: {
-          gitlabService.connect({ code }).then((response) => {
+          gitlabService.connect({ code, redirect_uri: GITLAB_REDIRECT_URI }).then((response) => {
             console.log({ response });
+            setIsConnected(true);
+            navigate(redirectPath);
           });
           break;
         }
@@ -33,7 +42,7 @@ function AuthGitlabCallback() {
     } catch {
       enqueueSnackbar('Action to verify is not valid!', { variant: 'error' });
     }
-  }, [code, state]);
+  }, []);
 
   return (
     <Spin>

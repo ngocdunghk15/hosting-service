@@ -33,9 +33,7 @@ module.exports = {
         jsxSingleQuote: true
       }
     ],
-    'no-unused-vars': ['warn',
-      { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': false }
-    ],
+    'no-unused-vars': 'off',
     'unused-imports/no-unused-vars': [
       'warn',
       {

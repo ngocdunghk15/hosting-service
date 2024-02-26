@@ -1,13 +1,17 @@
 import { Button } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
-import { GetAuthUrlOptions, gitlabService } from '~/services/gitlab.service';
-import { VITE_GITLAB_CLIENT_ID, GITLAB_REDIRECT_URI } from '~/config/gitlab.config';
-import { GitlabStateAction } from '~/enum/app.enum';
+import { useLocalStorage } from '~/hooks/useLocalStorage.ts';
+import { GetAuthUrlOptions, gitlabService } from '~/services/gitlab.service.ts';
+import { GITLAB_REDIRECT_URI, VITE_GITLAB_CLIENT_ID } from '~/config/gitlab.config.ts';
+import { GitlabKey, GitlabStateAction } from '~/enum/app.enum.ts';
 
-function LoginGitlabButton() {
+function ConnectGitlabButton() {
+  const [isConnected] = useLocalStorage(GitlabKey.IS_CONNECTED, false);
+
   return (
     <Button
+      danger={isConnected}
       block
       icon={<FontAwesomeIcon icon={faGitlab} />}
       onClick={() => {
@@ -16,15 +20,16 @@ function LoginGitlabButton() {
           redirect_uri: GITLAB_REDIRECT_URI,
           scope: 'read_user api write_repository read_repository',
           state: {
-            action: GitlabStateAction.AUTH
+            action: GitlabStateAction.CONNECT,
+            redirect_path: '/web/select-repo'
           }
         };
         window.location.href = gitlabService.getAuthorizationUrl(options);
       }}
     >
-      Continue with Gitlab
+      {`${isConnected ? 'Disconnect' : 'Connect'}`} to Gitlab
     </Button>
   );
 }
 
-export default LoginGitlabButton;
+export default ConnectGitlabButton;

@@ -3,7 +3,7 @@ import { Status } from '~/enum/app.enum.ts';
 
 type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any;
 
-const useApiRequest = (fn: CallbackFunctionVariadicAnyReturn) => {
+const usePromise = (fn: CallbackFunctionVariadicAnyReturn) => {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<any>(null);
   const [status, setStatus] = useState<Status>(Status.IDLE);
@@ -27,4 +27,4 @@ const useApiRequest = (fn: CallbackFunctionVariadicAnyReturn) => {
   return [{ data, error, status }, caller] as const;
 };
 
-export default useApiRequest;
+export default usePromise;

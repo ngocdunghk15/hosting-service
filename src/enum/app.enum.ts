@@ -19,3 +19,7 @@ export enum GitlabStateAction {
   CONNECT = 'connect',
   AUTH = 'auth'
 }
+
+export enum GitlabKey {
+  IS_CONNECTED = 'isConnected'
+}

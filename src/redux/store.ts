@@ -3,9 +3,11 @@ import storage from 'redux-persist/lib/storage';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { authSlice } from '~/redux/slice/auth.slice';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
+import { gitlabSlice } from '~/redux/slice/gitlab.slice.ts';
 
 const reducers = combineReducers({
-  auth: authSlice.reducer
+  auth: authSlice.reducer,
+  gitlab: gitlabSlice.reducer
 });
 
 const persistConfig = {

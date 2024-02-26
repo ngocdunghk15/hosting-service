@@ -1,6 +1,6 @@
 import { Layout, Typography } from 'antd';
-import SelectRepo from '~/components/Services/SelectRepo';
 import { Service } from '~/enum/app.enum';
+import SelectRepo from '~/components/Services/SelectRepo';
 
 function WebSelectRepoPage() {
   return (

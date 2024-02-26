@@ -7,10 +7,12 @@ export interface GetAuthUrlOptions {
   response_type?: string;
   state?: any;
   scope?: string;
+  grant_type?: string;
 }
 
 interface ConnectPayload {
   code: string;
+  redirect_uri: string;
 }
 
 class GitlabService {
@@ -35,6 +37,10 @@ class GitlabService {
 
   public connect = async (payload: ConnectPayload) => {
     return await httpService.get('/gitlab/connect', payload);
+  };
+
+  public getAccountInfo = async () => {
+    return await httpService.get('/gitlab/user-info');
   };
 }
 
