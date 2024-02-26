@@ -14,3 +14,8 @@ export enum Runtime {
   DOCKER = 'docker',
   NODE = 'node'
 }
+
+export enum GitlabStateAction {
+  CONNECT = 'connect',
+  AUTH = 'auth'
+}

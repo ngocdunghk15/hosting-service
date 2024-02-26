@@ -1,6 +1,7 @@
 import { Button, Form } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGithub, faGitlab, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faGithub, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import LoginGitlabButton from '~/components/Auth/OAuthServices/LoginGitlabButton';
 
 function OAuthServices() {
   return (
@@ -11,9 +12,7 @@ function OAuthServices() {
         </Button>
       </Form.Item>
       <Form.Item>
-        <Button block icon={<FontAwesomeIcon icon={faGitlab} />}>
-          Continue with Gitlab
-        </Button>
+        <LoginGitlabButton />
       </Form.Item>
       <Form.Item>
         <Button block icon={<FontAwesomeIcon icon={faGoogle} />}>

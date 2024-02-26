@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import AuthLayout from '~/layout/AuthLayout';
+import AuthGitlabCallback from '~/pages/auth/gitlab/callback';
 
 const LoginPage = lazy(() => import('~/pages/auth/login'));
 const RegisterPage = lazy(() => import('~/pages/auth/register'));
@@ -12,6 +13,7 @@ export default function AuthRoutes() {
       <Route path={''} element={<AuthLayout />}>
         <Route path={'/login'} element={<Suspense fallback={<>Loading...</>}>{<LoginPage />}</Suspense>} />
         <Route path={'/register'} element={<Suspense fallback={<>Loading...</>}>{<RegisterPage />}</Suspense>} />
+        <Route path={'/gitlab/callback'} element={<AuthGitlabCallback />} />
         <Route
           path={'*'}
           element={
