@@ -1,23 +1,29 @@
 import { Status } from '~/enum/app.enum.ts';
 import { createSlice } from '@reduxjs/toolkit';
-import { loadAccountInfo } from '~/redux/actions/gitlab.action';
-import { GitlabAccount } from '~/types/gitlab.type';
+import { loadAccountInfo, loadAllProjects } from '~/redux/actions/gitlab.action';
+import { GitlabAccount, GitlabProject } from '~/types/gitlab.type';
 
 export interface GitlabSliceState {
   isConnected: boolean;
-  status: Status;
   account: {
     data: GitlabAccount;
+    status: Status;
+  };
+  projects: {
+    data: GitlabProject[];
     status: Status;
   };
 }
 
 export const initialGitlabState: GitlabSliceState = {
   isConnected: false,
-  status: Status.IDLE,
   account: {
     data: {} as GitlabAccount,
-    status: Status.IDLE
+    status: Status.PENDING
+  },
+  projects: {
+    data: [],
+    status: Status.PENDING
   }
 };
 
@@ -27,7 +33,6 @@ export const gitlabSlice = createSlice({
   reducers: {
     doRevoke: (state) => {
       state.isConnected = false;
-      state.status = Status.IDLE;
       state.account = {
         data: {} as GitlabAccount,
         status: Status.IDLE
@@ -47,8 +52,19 @@ export const gitlabSlice = createSlice({
         state.account.status = Status.FULFILLED;
       })
       .addCase(loadAccountInfo.rejected, (state) => {
-        state.account.data = {} as GitlabAccount;
         state.account.status = Status.REJECTED;
+      });
+
+    builder
+      .addCase(loadAllProjects.pending, (state) => {
+        state.projects.status = Status.PENDING;
+      })
+      .addCase(loadAllProjects.fulfilled, (state, action) => {
+        state.projects.data = action.payload.data.projects;
+        state.projects.status = Status.FULFILLED;
+      })
+      .addCase(loadAllProjects.rejected, (state) => {
+        state.projects.status = Status.REJECTED;
       });
   }
 });

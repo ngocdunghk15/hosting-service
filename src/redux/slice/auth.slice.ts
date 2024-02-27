@@ -49,7 +49,7 @@ export const authSlice = createSlice({
       })
       .addCase(doLogin.rejected, (state) => {
         state.status = Status.REJECTED;
-      });
+      })
   }
 });
 

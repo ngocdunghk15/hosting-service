@@ -55,21 +55,21 @@ class HttpService {
       const refreshToken = store.getState()?.auth?.refreshToken;
       if (!refreshToken) {
         store.dispatch(setAuthState({ ...initialAuthState }));
-        window?.location?.replace('/auth/sign-in');
+        window?.location?.replace('/auth/login');
       }
-      const response = (await axios.post(`${this.configs?.baseURL}/auth/refresh`, { refreshToken: refreshToken }))
+      const response = (await axios.post(`${this.configs?.baseURL}/auth/refresh`, { refresh_token: refreshToken }))
         ?.data;
       store.dispatch(
         setAuthState({
-          accessToken: response?.access.token,
-          refreshToken: response?.refresh.token,
+          accessToken: response?.access_token,
+          refreshToken: response?.refresh_token,
           account: response?.account,
           isLoggedIn: true
         })
       );
       return Promise.resolve(response);
     } catch (error) {
-      window.location.href = '/auth/sign-in';
+      window.location.href = '/auth/login';
     }
   };
 

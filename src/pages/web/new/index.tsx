@@ -1,12 +1,34 @@
-import { Button, Card, Col, Divider, Form, Input, Layout, Row, Select, Typography } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, Layout, Row, Select, Skeleton, Typography } from 'antd';
 import NewFieldItem from '~/components/Services/Web/NewFieldItem';
-import { Runtime } from '~/enum/app.enum';
+import { Runtime, Status } from '~/enum/app.enum';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleMinus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { gitlabService } from '~/services/gitlab.service.ts';
+import usePromise from '~/hooks/usePromise.ts';
 
 function WebNewPage() {
   const [form] = Form.useForm();
+  const [searchParams] = useSearchParams();
+  const projectID = searchParams.get('projectID');
   const runtime = Form.useWatch('runtime', form);
+  const navigate = useNavigate();
+  const [{ data: project, status }, doGetProjectInfo] = usePromise(gitlabService.getProjectById);
+  useEffect(() => {
+    if (!projectID) {
+      return navigate('/web/select-repo');
+    }
+    doGetProjectInfo({
+      id: projectID
+    })
+      .then((response) => {
+        console.log({ response });
+      })
+      .catch(() => {
+        return navigate('/web/select-repo');
+      });
+  }, []);
 
   return (
     <Layout
@@ -15,189 +37,195 @@ function WebNewPage() {
         margin: '0 auto'
       }}
     >
-      <div className={'mb-12'}>
-        <Typography.Title level={3}>You are deploying a web service for @Repo_Name</Typography.Title>
-        <Typography.Text type={'secondary'}>
-          You seem to be using Docker, so we’ve autofilled some fields accordingly. Make sure the values look right to
-          you!
-        </Typography.Text>
-      </div>
-      <Card bordered={false}>
-        <Form form={form} initialValues={{ envVars: [''], runtime: Runtime.NODE }}>
-          <Row gutter={[32, 24]}>
-            <Col span={24}>
-              <Typography.Title className={'mb-0'} level={5}>
-                Service Configuration
-              </Typography.Title>
-            </Col>
-            <Col span={8}>
-              <NewFieldItem title={'Name'} description={'A unique name for your web service.'} />
-            </Col>
-            <Col span={16}>
-              <Form.Item name={'name'}>
-                <Input placeholder={'Service name'} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <NewFieldItem title={'Branch'} description={'The repository branch used for your web service.'} />
-            </Col>
-            <Col span={16}>
-              <Form.Item name={'branch'}>
-                <Select
-                  defaultValue={'main'}
-                  options={[
-                    {
-                      label: 'main',
-                      value: 'main'
-                    }
-                  ]}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <NewFieldItem
-                isOptional
-                title={'Root Directory'}
-                description={
-                  'Defaults to repository root. When you specify a root directory that is different from your repository root, Render runs all your commands in the specified directory and ignores changes outside the directory.'
-                }
-              />
-            </Col>
-            <Col span={16}>
-              <Form.Item name={'rootDir'}>
-                <Input placeholder={'./'} />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Divider className={'my-0'} />
-            </Col>
-            <Col span={24}>
-              <Typography.Title className={'mb-0'} level={5}>
-                Build Configuration
-              </Typography.Title>
-            </Col>
-            <Col span={8}>
-              <NewFieldItem title={'Runtime'} description={'The runtime for your web service.'} />
-            </Col>
-            <Col span={16}>
-              <Form.Item name={'runtime'}>
-                <Select
-                  options={[
-                    {
-                      label: 'Docker',
-                      value: Runtime.DOCKER
-                    },
-                    {
-                      label: 'Node',
-                      value: Runtime.NODE
-                    }
-                  ]}
-                />
-              </Form.Item>
-            </Col>
-            {runtime === Runtime.NODE && (
-              <>
+      {status === Status.PENDING ? (
+        <Skeleton />
+      ) : (
+        <>
+          <div className={'mb-12'}>
+            <Typography.Title level={3}>You are deploying a web service for @Repo_Name</Typography.Title>
+            <Typography.Text type={'secondary'}>
+              You seem to be using Docker, so we’ve autofilled some fields accordingly. Make sure the values look right
+              to you!
+            </Typography.Text>
+          </div>
+          <Card bordered={false}>
+            <Form form={form} initialValues={{ envVars: [''], runtime: Runtime.NODE }}>
+              <Row gutter={[32, 24]}>
+                <Col span={24}>
+                  <Typography.Title className={'mb-0'} level={5}>
+                    Service Configuration
+                  </Typography.Title>
+                </Col>
                 <Col span={8}>
-                  <NewFieldItem
-                    title={'Build Command'}
-                    description={
-                      'This command runs in the root directory of your repository when a new version of your code is pushed, or when you deploy manually. It is typically a script that installs libraries, runs migrations, or compiles resources needed by your app'
-                    }
-                  />
+                  <NewFieldItem title={'Name'} description={'A unique name for your web service.'} />
                 </Col>
                 <Col span={16}>
-                  <Form.Item name={'buildCmd'}>
-                    <Input
-                      prefix={'>_'}
-                      defaultValue={'yarn --frozen-lockfile install; yarn build'}
-                      spellCheck={false}
+                  <Form.Item name={'name'}>
+                    <Input placeholder={'Service name'} />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <NewFieldItem title={'Branch'} description={'The repository branch used for your web service.'} />
+                </Col>
+                <Col span={16}>
+                  <Form.Item name={'branch'}>
+                    <Select
+                      defaultValue={'main'}
+                      options={[
+                        {
+                          label: 'main',
+                          value: 'main'
+                        }
+                      ]}
                     />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
                   <NewFieldItem
-                    title={'Start Command'}
+                    isOptional
+                    title={'Root Directory'}
                     description={
-                      'This command runs in the root directory of your app and is responsible for starting its processes. It is typically used to start a webserver for your app. It can access environment variables defined by you in UET hosting.'
+                      'Defaults to repository root. When you specify a root directory that is different from your repository root, Render runs all your commands in the specified directory and ignores changes outside the directory.'
                     }
                   />
                 </Col>
                 <Col span={16}>
-                  <Form.Item name={'buildCmd'}>
-                    <Input prefix={'>_'} defaultValue={'yarn start'} spellCheck={false} />
+                  <Form.Item name={'rootDir'}>
+                    <Input placeholder={'./'} />
                   </Form.Item>
                 </Col>
-              </>
-            )}
-            <Col span={24}>
-              <Divider className={'my-0'} />
-            </Col>
-            <Col span={24}>
-              <Typography.Title className={'mb-0'} level={5}>
-                Environment Variables
-              </Typography.Title>
-            </Col>
-            <Col span={8}>
-              <NewFieldItem
-                isOptional
-                title={'Environment Variables'}
-                description={
-                  'Set environment-specific config and secrets (such as API keys), then read those values from your code. '
-                }
-              />
-            </Col>
-            <Col span={16}>
-              <Form.List name='envVars'>
-                {(fields, { add, remove }) => (
+                <Col span={24}>
+                  <Divider className={'my-0'} />
+                </Col>
+                <Col span={24}>
+                  <Typography.Title className={'mb-0'} level={5}>
+                    Build Configuration
+                  </Typography.Title>
+                </Col>
+                <Col span={8}>
+                  <NewFieldItem title={'Runtime'} description={'The runtime for your web service.'} />
+                </Col>
+                <Col span={16}>
+                  <Form.Item name={'runtime'}>
+                    <Select
+                      options={[
+                        {
+                          label: 'Docker',
+                          value: Runtime.DOCKER
+                        },
+                        {
+                          label: 'Node',
+                          value: Runtime.NODE
+                        }
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
+                {runtime === Runtime.NODE && (
                   <>
-                    {fields.map(({ key, name }, index) => {
-                      return (
-                        <div key={key} className={'w-full flex items-center gap-6'}>
-                          <Form.Item name={[name, 'key']} className={'flex-grow-1'}>
-                            <Input placeholder='Key' />
-                          </Form.Item>
-                          <Form.Item name={[name, 'value']} className={'flex-grow-1'}>
-                            <Input placeholder='Value' />
-                          </Form.Item>
-                          <Form.Item>
-                            {fields.length - 1 === index ? (
-                              <Button
-                                shape={'circle'}
-                                type={'text'}
-                                onClick={() => {
-                                  add();
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faCirclePlus} size={'xl'} />
-                              </Button>
-                            ) : (
-                              <Button
-                                shape={'circle'}
-                                type={'text'}
-                                onClick={() => {
-                                  remove(name);
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faCircleMinus} size={'xl'} />
-                              </Button>
-                            )}
-                          </Form.Item>
-                        </div>
-                      );
-                    })}
+                    <Col span={8}>
+                      <NewFieldItem
+                        title={'Build Command'}
+                        description={
+                          'This command runs in the root directory of your repository when a new version of your code is pushed, or when you deploy manually. It is typically a script that installs libraries, runs migrations, or compiles resources needed by your app'
+                        }
+                      />
+                    </Col>
+                    <Col span={16}>
+                      <Form.Item name={'buildCmd'}>
+                        <Input
+                          prefix={'>_'}
+                          defaultValue={'yarn --frozen-lockfile install; yarn build'}
+                          spellCheck={false}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <NewFieldItem
+                        title={'Start Command'}
+                        description={
+                          'This command runs in the root directory of your app and is responsible for starting its processes. It is typically used to start a webserver for your app. It can access environment variables defined by you in UET hosting.'
+                        }
+                      />
+                    </Col>
+                    <Col span={16}>
+                      <Form.Item name={'buildCmd'}>
+                        <Input prefix={'>_'} defaultValue={'yarn start'} spellCheck={false} />
+                      </Form.Item>
+                    </Col>
                   </>
                 )}
-              </Form.List>
-            </Col>
-            <Col span={24}>
-              <Divider className={'my-0'} />
-            </Col>
-            <Col span={24} className={'flex justify-end '}>
-              <Button type={'primary'}>Build & Deploy Web Service</Button>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
+                <Col span={24}>
+                  <Divider className={'my-0'} />
+                </Col>
+                <Col span={24}>
+                  <Typography.Title className={'mb-0'} level={5}>
+                    Environment Variables
+                  </Typography.Title>
+                </Col>
+                <Col span={8}>
+                  <NewFieldItem
+                    isOptional
+                    title={'Environment Variables'}
+                    description={
+                      'Set environment-specific config and secrets (such as API keys), then read those values from your code. '
+                    }
+                  />
+                </Col>
+                <Col span={16}>
+                  <Form.List name='envVars'>
+                    {(fields, { add, remove }) => (
+                      <>
+                        {fields.map(({ key, name }, index) => {
+                          return (
+                            <div key={key} className={'w-full flex items-center gap-6'}>
+                              <Form.Item name={[name, 'key']} className={'flex-grow-1'}>
+                                <Input placeholder='Key' />
+                              </Form.Item>
+                              <Form.Item name={[name, 'value']} className={'flex-grow-1'}>
+                                <Input placeholder='Value' />
+                              </Form.Item>
+                              <Form.Item>
+                                {fields.length - 1 === index ? (
+                                  <Button
+                                    shape={'circle'}
+                                    type={'text'}
+                                    onClick={() => {
+                                      add();
+                                    }}
+                                  >
+                                    <FontAwesomeIcon icon={faCirclePlus} size={'xl'} />
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    shape={'circle'}
+                                    type={'text'}
+                                    onClick={() => {
+                                      remove(name);
+                                    }}
+                                  >
+                                    <FontAwesomeIcon icon={faCircleMinus} size={'xl'} />
+                                  </Button>
+                                )}
+                              </Form.Item>
+                            </div>
+                          );
+                        })}
+                      </>
+                    )}
+                  </Form.List>
+                </Col>
+                <Col span={24}>
+                  <Divider className={'my-0'} />
+                </Col>
+                <Col span={24} className={'flex justify-end '}>
+                  <Button type={'primary'}>Build & Deploy Web Service</Button>
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+        </>
+      )}
     </Layout>
   );
 }

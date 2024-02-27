@@ -35,14 +35,14 @@ function WebCreatePage() {
         >
           <Space direction='vertical' className={'w-full'}>
             <Form.Item>
-              <Card bordered={false} className={'w-full'} bodyStyle={{ padding: 0 }}>
+              <Card bordered={false} className={'w-full'} styles={{ body: { padding: 0 } }}>
                 <Radio className={'w-full'} style={{ padding: 24 }} value={'/web/select-repo'}>
                   Build and deploy from a Git repository
                 </Radio>
               </Card>
             </Form.Item>
             <Form.Item>
-              <Card bordered={false} className={'w-full'} bodyStyle={{ padding: 0 }}>
+              <Card bordered={false} className={'w-full'} styles={{ body: { padding: 0 } }}>
                 <Radio className={'w-full'} style={{ padding: 24 }} value={'/web/deploy'}>
                   Deploy an existing image from a registry
                 </Radio>

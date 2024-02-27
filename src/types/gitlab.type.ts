@@ -6,43 +6,47 @@ export interface GitlabAccount {
   locked: boolean;
   avatar_url: string;
   web_url: string;
-  created_at: string;
-  bio: string;
-  location: string;
-  public_email: string;
-  skype: string;
-  linkedin: string;
-  twitter: string;
-  discord: string;
-  website_url: string;
-  organization: string;
-  job_title: string;
-  pronouns: string;
-  bot: boolean;
-  work_information: any;
-  local_time: any;
-  last_sign_in_at: string;
-  confirmed_at: string;
-  last_activity_on: string;
-  email: string;
-  theme_id: number;
-  color_scheme_id: number;
-  projects_limit: number;
-  current_sign_in_at: string;
-  identities: Identity[];
-  can_create_group: boolean;
-  can_create_project: boolean;
-  two_factor_enabled: boolean;
-  external: boolean;
-  private_profile: boolean;
-  commit_email: string;
-  shared_runners_minutes_limit: any;
-  extra_shared_runners_minutes_limit: any;
-  scim_identities: any[];
 }
 
-export interface Identity {
-  provider: string;
-  extern_uid: string;
-  saml_provider_id: any;
+export interface GitlabAccountReturned {
+  data: {
+    account: GitlabAccount;
+  };
+  success: boolean;
+}
+
+export interface GitlabProjectReturned {
+  data: {
+    projects: GitlabProject[];
+  };
+  success: boolean;
+}
+
+export interface GitlabProject {
+  id: number;
+  name: string;
+  path: string;
+  path_with_namespace: string;
+  default_branch: string;
+  ssh_url_to_repo: string;
+  http_url_to_repo: string;
+  web_url: string;
+  avatar_url: any;
+  empty_repo: boolean;
+  archived: boolean;
+  visibility: string;
+  last_activity_at: Date;
+  namespace: GitlabNamespace;
+  owner: GitlabAccount;
+}
+
+export interface GitlabNamespace {
+  id: number;
+  name: string;
+  path: string;
+  kind: string;
+  full_path: string;
+  parent_id: any;
+  avatar_url: any;
+  web_url: string;
 }

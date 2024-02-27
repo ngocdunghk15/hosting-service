@@ -1,12 +1,16 @@
 import { Avatar, Button, Card, Col, Divider, Form, Input, List, Row, Select, Space, Typography } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub, faGitlab } from '@fortawesome/free-brands-svg-icons';
-import { Service } from '~/enum/app.enum.ts';
+import { Service, Status } from '~/enum/app.enum.ts';
 import { useNavigate } from 'react-router-dom';
 import ConnectGitlabButton from '~/components/Services/SelectRepo/ConnectGitlabButton';
 import { useEffect } from 'react';
-import { gitlabService } from '~/services/gitlab.service.ts';
 import { useAppSelector } from '~/redux/store';
+import { faGlobe, faLock } from '@fortawesome/free-solid-svg-icons';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const { Search } = Input;
 
@@ -17,6 +21,8 @@ interface SelectRepoProps {
 export default function SelectRepo(props: SelectRepoProps) {
   const navigate = useNavigate();
   const isConnectedToGitlab = useAppSelector((state) => state.gitlab.isConnected);
+  const gitlabProjects = useAppSelector((state) => state.gitlab.projects.data);
+  const loadingGitlabProjectStatus = useAppSelector((state) => state.gitlab.projects.status);
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
   };
@@ -29,42 +35,15 @@ export default function SelectRepo(props: SelectRepoProps) {
   const filterOption = (input: string, option?: { label: string; value: string }) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
-  const data = [
-    {
-      title: 'Git repository 1'
-    },
-    {
-      title: 'Git repository 2'
-    },
-    {
-      title: 'Git repository 3'
-    },
-    {
-      title: 'Git repository 4'
-    },
-    {
-      title: 'Git repository 5'
-    },
-    {
-      title: 'Git repository 6'
-    },
-    {
-      title: 'Git repository 7'
-    },
-    {
-      title: 'Git repository 8'
-    }
-  ];
-
   useEffect(() => {
     if (isConnectedToGitlab) {
-      gitlabService.getAllProjects();
+      // gitlabService.getAllProjects();
     }
   }, [isConnectedToGitlab]);
 
   return (
     <Row gutter={[16, 16]}>
-      <Col xs={24} md={16}>
+      <Col xs={24} lg={16}>
         <Card className={'mb-4 '} bordered={false}>
           <Typography.Title className={'mb-4'} level={5}>
             Connect a repository
@@ -108,20 +87,21 @@ export default function SelectRepo(props: SelectRepoProps) {
           <Divider className={'my-3'} />
           <div
             style={{
-              height: 360,
+              maxHeight: 360,
               overflow: 'auto'
             }}
           >
             <List
+              loading={loadingGitlabProjectStatus === Status.PENDING}
               itemLayout='horizontal'
-              dataSource={data}
+              dataSource={gitlabProjects}
               renderItem={(item) => (
                 <List.Item
                   actions={[
                     <Button
                       type={'primary'}
-                      onClick={() => {
-                        navigate(`/${props?.type}/new`);
+                      onClick={async () => {
+                        navigate(`/${props?.type}/new?projectID=${item?.id}`);
                       }}
                     >
                       Import
@@ -129,8 +109,20 @@ export default function SelectRepo(props: SelectRepoProps) {
                   ]}
                 >
                   <div className={'flex gap-4 items-center'}>
-                    <Avatar shape={'square'} icon={<FontAwesomeIcon icon={faGitlab} />} />
-                    <Typography>{item?.title}</Typography>
+                    <Avatar
+                      shape={'square'}
+                      src={item?.avatar_url}
+                      icon={item?.avatar_url || <FontAwesomeIcon icon={faGitlab} />}
+                    />
+                    <Typography.Text ellipsis={true}>{`${item?.namespace?.path} / ${item?.name}`}</Typography.Text>
+                    {item?.visibility === 'private' ? (
+                      <FontAwesomeIcon icon={faLock} />
+                    ) : (
+                      <FontAwesomeIcon icon={faGlobe} />
+                    )}
+                    <Typography.Text type={'secondary'} ellipsis={true}>
+                      {dayjs(item?.last_activity_at)?.fromNow()}
+                    </Typography.Text>
                   </div>
                 </List.Item>
               )}
@@ -153,7 +145,7 @@ export default function SelectRepo(props: SelectRepoProps) {
           </Space.Compact>
         </Card>
       </Col>
-      <Col xs={24} md={8}>
+      <Col xs={24} lg={8}>
         <Card bordered={false}>
           <Typography.Title className={'mb-4'} level={5}>
             Git provider configuration

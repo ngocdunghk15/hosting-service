@@ -1,5 +1,6 @@
 import { jwtService } from '~/services/jwt.service';
 import { httpService } from '~/services/http.service';
+import { GitlabAccountReturned, GitlabProjectReturned } from '~/types/gitlab.type.ts';
 
 export interface GetAuthUrlOptions {
   client_id: string;
@@ -13,6 +14,10 @@ export interface GetAuthUrlOptions {
 interface ConnectPayload {
   code: string;
   redirect_uri: string;
+}
+
+export interface GetGitlabProjectByIdPayload {
+  id: string;
 }
 
 class GitlabService {
@@ -40,11 +45,15 @@ class GitlabService {
   };
 
   public getAccountInfo = async () => {
-    return await httpService.get('/gitlab/user-info');
+    return await httpService.get<GitlabAccountReturned>('/gitlab/user-info');
   };
 
   public getAllProjects = async () => {
-    return await httpService.get('/gitlab/get-all-projects');
+    return await httpService.get<GitlabProjectReturned>(`/gitlab/projects`);
+  };
+
+  public getProjectById = async (payload: GetGitlabProjectByIdPayload) => {
+    return (await httpService.get<any>(`/gitlab/projects/${payload?.id}`))?.data?.data;
   };
 }
 
