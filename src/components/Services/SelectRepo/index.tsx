@@ -135,7 +135,7 @@ export default function SelectRepo(props: SelectRepoProps) {
           </Typography.Title>
           <Typography.Text type={'secondary'}>
             Use a public repository by entering the URL below. Features like PR Previews and Auto-Deploy are not
-            available if the repository has not been configured for Render.
+            available if the repository has not been configured for UET Hosting.
           </Typography.Text>
           <Space.Compact className={'w-full mt-6 flex items-center'}>
             <Input placeholder={'https://github.com/uet-hosting-examples/repository-name'} />

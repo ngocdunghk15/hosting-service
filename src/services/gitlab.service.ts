@@ -55,6 +55,10 @@ class GitlabService {
   public getProjectById = async (payload: GetGitlabProjectByIdPayload) => {
     return (await httpService.get<any>(`/gitlab/projects/${payload?.id}`))?.data?.data;
   };
+
+  public testClone = async ({ projectId }: { projectId: string }) => {
+    return await httpService.post(`/core/test`, { projectId });
+  };
 }
 
 export const gitlabService = new GitlabService();

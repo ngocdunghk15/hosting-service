@@ -15,6 +15,15 @@ function WebNewPage() {
   const runtime = Form.useWatch('runtime', form);
   const navigate = useNavigate();
   const [{ data: project, status }, doGetProjectInfo] = usePromise(gitlabService.getProjectById);
+
+  const handleBuildDeployService = () => {
+    if (project?.id) {
+      gitlabService.testClone({
+        projectId: `${project?.id}`
+      });
+    }
+  };
+
   useEffect(() => {
     if (!projectID) {
       return navigate('/web/select-repo');
@@ -30,6 +39,8 @@ function WebNewPage() {
       });
   }, []);
 
+  useEffect(() => {}, [project]);
+
   return (
     <Layout
       style={{
@@ -38,11 +49,24 @@ function WebNewPage() {
       }}
     >
       {status === Status.PENDING ? (
-        <Skeleton />
+        <>
+          <Skeleton />
+          <Card className={'mt-10'} bordered={false}>
+            <Skeleton />
+            <Divider />
+            <Skeleton />
+            <Skeleton />
+            <Divider />
+            <Skeleton />
+            <Skeleton />
+          </Card>
+        </>
       ) : (
         <>
           <div className={'mb-12'}>
-            <Typography.Title level={3}>You are deploying a web service for @Repo_Name</Typography.Title>
+            <Typography.Title level={3}>
+              You are deploying a web service for {`${project?.namespace?.path} / ${project?.name}`}
+            </Typography.Title>
             <Typography.Text type={'secondary'}>
               You seem to be using Docker, so we’ve autofilled some fields accordingly. Make sure the values look right
               to you!
@@ -219,7 +243,9 @@ function WebNewPage() {
                   <Divider className={'my-0'} />
                 </Col>
                 <Col span={24} className={'flex justify-end '}>
-                  <Button type={'primary'}>Build & Deploy Web Service</Button>
+                  <Button type={'primary'} onClick={handleBuildDeployService}>
+                    Build & Deploy Web Service
+                  </Button>
                 </Col>
               </Row>
             </Form>
