@@ -1,6 +1,6 @@
-import {Button, Dropdown, Input, Layout, Select, Table, Typography} from 'antd';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faGlobe, faLaptop, faMagnifyingGlass, faPlus} from '@fortawesome/free-solid-svg-icons';
+import { Button, Dropdown, Input, Layout, Select, Table, Typography } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGlobe, faLaptop, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 export default function HomePage() {
   return (
@@ -9,15 +9,15 @@ export default function HomePage() {
         <Typography.Title level={3}>Services overview</Typography.Title>
         <Typography.Text type={'secondary'}>Manage all your services here.</Typography.Text>
       </div>
-      <div className={'flex  gap-8 mb-6'}>
+      <div className={'flex gap-8 mb-6'}>
         <Input
-          prefix={<FontAwesomeIcon icon={faMagnifyingGlass}/>}
+          prefix={<FontAwesomeIcon icon={faMagnifyingGlass} />}
           className={'flex-grow-1'}
           placeholder={'Search services...'}
         />
         <Select
           defaultValue={'sort-by-activity' as any}
-          style={{width: 240}}
+          style={{ width: 240 }}
           options={
             [
               {
@@ -38,22 +38,22 @@ export default function HomePage() {
               {
                 key: 'static-site',
                 label: 'Static site',
-                icon: <FontAwesomeIcon icon={faLaptop}/>
+                icon: <FontAwesomeIcon icon={faLaptop} />
               },
               {
                 key: 'web-service',
                 label: 'Web service',
-                icon: <FontAwesomeIcon icon={faGlobe}/>
+                icon: <FontAwesomeIcon icon={faGlobe} />
               }
             ]
           }}
         >
-          <Button icon={<FontAwesomeIcon icon={faPlus}/>} type={'primary'}>
+          <Button icon={<FontAwesomeIcon icon={faPlus} />} type={'primary'}>
             Create new service
           </Button>
         </Dropdown>
       </div>
-      <Table/>
+      <Table />
     </Layout>
   );
 }

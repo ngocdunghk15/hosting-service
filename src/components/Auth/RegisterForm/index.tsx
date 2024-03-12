@@ -95,7 +95,7 @@ function RegisterForm() {
       </Form.Item>
       <Checkbox
         className={' mb-3'}
-        value={isConfirmedPolicy}
+        checked={isConfirmedPolicy}
         onChange={(event) => {
           setIsConfirmedPolicy(event.target.checked);
         }}

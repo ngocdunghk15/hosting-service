@@ -20,6 +20,10 @@ export interface GetGitlabProjectByIdPayload {
   id: string;
 }
 
+export interface GetProjectHooksPayload {
+  id: string;
+}
+
 class GitlabService {
   static END_POINT: string = 'https://gitlab.com';
 
@@ -56,8 +60,8 @@ class GitlabService {
     return (await httpService.get<any>(`/gitlab/projects/${payload?.id}`))?.data?.data;
   };
 
-  public testClone = async ({ projectId }: { projectId: string }) => {
-    return await httpService.post(`/core/test`, { projectId });
+  public getProjectHooks = async (payload: GetProjectHooksPayload) => {
+    return (await httpService.get(`/gitlab/projects/${payload?.id}/hooks`));
   };
 }
 

@@ -1,9 +1,11 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { store } from '~/redux/store.ts';
-import { initialAuthState, setAuthState } from '~/redux/slice/auth.slice.ts';
+import { doLogout, setAuthState } from '~/redux/slice/auth.slice.ts';
 import { axiosConfigs } from '~/config/http.config.ts';
 import { CreateAxiosConfigs, HttpInternalRequestConfig, HttpRequestConfig } from '~/types/http.type.ts';
+import StorageService from '~/services/storage.service.ts';
+import { Token } from '~/enum/app.enum.ts';
 
 class HttpService {
   private readonly axiosService: AxiosInstance;
@@ -21,15 +23,13 @@ class HttpService {
   };
 
   private onRequest = async (config: HttpInternalRequestConfig) => {
-    const accessToken = store.getState().auth.accessToken;
     if (!config?.isPublicApi) {
-      const decodedAccessToken: any = jwtDecode(accessToken);
-      const isAccessTokenExpired = decodedAccessToken.exp * 1000 < new Date().getTime();
+      const isAccessTokenExpired = await this.checkIsAccessTokenExpired();
       if (isAccessTokenExpired) {
         await this.handleRefreshToken();
       }
 
-      const updatedAccessToken = store.getState().auth.accessToken;
+      const updatedAccessToken = StorageService.get(Token.ACCESS, '');
       Object.assign(config?.headers, {
         Authorization: `Bearer ${updatedAccessToken}`
       });
@@ -50,19 +50,28 @@ class HttpService {
     return Promise.reject(error);
   };
 
-  private handleRefreshToken = async () => {
+  public checkIsAccessTokenExpired = () => {
+    return new Promise((resolve) => {
+      const accessToken = StorageService.get(Token.ACCESS, '');
+      const decodedAccessToken: any = jwtDecode(accessToken);
+      resolve(decodedAccessToken.exp * 1000 < new Date().getTime());
+    });
+  };
+
+  public handleRefreshToken = async () => {
     try {
-      const refreshToken = store.getState()?.auth?.refreshToken;
+      const refreshToken = StorageService.get(Token.REFRESH, '');
+      console.log({ refreshToken });
       if (!refreshToken) {
-        store.dispatch(setAuthState({ ...initialAuthState }));
+        store.dispatch(doLogout());
         window?.location?.replace('/auth/login');
       }
       const response = (await axios.post(`${this.configs?.baseURL}/auth/refresh`, { refresh_token: refreshToken }))
         ?.data;
+      StorageService.set(Token.ACCESS, response?.access_token);
+      StorageService.set(Token.REFRESH, response?.refresh_token);
       store.dispatch(
         setAuthState({
-          accessToken: response?.access_token,
-          refreshToken: response?.refresh_token,
           account: response?.account,
           isLoggedIn: true
         })

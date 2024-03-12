@@ -5,7 +5,7 @@ export enum Status {
   REJECTED = 'rejected'
 }
 
-export enum Service {
+export enum ServiceType {
   STATIC_WEB = 'static',
   WEB_SERVICE = 'web'
 }
@@ -20,3 +20,7 @@ export enum GitlabStateAction {
   AUTH = 'auth'
 }
 
+export enum Token {
+  ACCESS = 'accessToken',
+  REFRESH = 'refreshToken'
+}

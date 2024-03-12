@@ -14,6 +14,7 @@ function RequiredAuthProvider(props: RequiredAuthProviderProps) {
 
   useEffect(() => {
     if (!isLoggedIn) {
+      console.log("HERER");
       navigate('/auth/login');
     }
   }, []);
