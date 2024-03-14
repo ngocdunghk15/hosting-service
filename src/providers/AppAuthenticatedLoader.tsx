@@ -7,6 +7,7 @@ import { setIsConnected } from '~/redux/slice/gitlab.slice';
 function AppAuthenticatedLoader() {
   const dispatch = useAppDispatch();
   const isConnected = useAppSelector((state) => state.gitlab.isConnected);
+
   useEffect(() => {
     dispatch(loadAccountInfo()).then((response) => {
       if (response.meta.requestStatus === 'fulfilled') {

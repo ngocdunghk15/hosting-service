@@ -17,3 +17,10 @@ export interface DoRegisterPayload {
   password: string;
   confirmPassword: string;
 }
+
+export interface GetAccountInfoReturned {
+  data: {
+    account: Account;
+  };
+  success: boolean;
+}

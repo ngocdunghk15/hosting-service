@@ -13,7 +13,7 @@ const reducers = combineReducers({
 const persistConfig = {
   key: 'u2-music-dashboard',
   storage,
-  whitelist: ['auth']
+  blacklist: ['auth']
 };
 
 const persistedReducer = persistReducer<ReturnType<typeof reducers>>(persistConfig, reducers);

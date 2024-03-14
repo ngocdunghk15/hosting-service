@@ -12,7 +12,7 @@ function AppLayout() {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken();
 
-  const account = useAppSelector((state) => state.auth.account);
+  const account = useAppSelector((state) => state.auth.account.data);
   const navigate = useNavigate();
 
   return (

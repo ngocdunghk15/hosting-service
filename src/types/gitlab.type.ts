@@ -38,6 +38,7 @@ export interface GitlabProject {
   last_activity_at: Date;
   namespace: GitlabNamespace;
   owner: GitlabAccount;
+  branches: string[];
 }
 
 export interface GitlabNamespace {

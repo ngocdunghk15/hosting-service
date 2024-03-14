@@ -12,7 +12,7 @@ function PassAuthProvider() {
     if (isLoggedIn) {
       navigate('/');
     }
-  }, []);
+  }, [isLoggedIn]);
 
   if (!isClient) return <>Loading...</>;
   return <Outlet />;

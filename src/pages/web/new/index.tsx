@@ -7,8 +7,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { gitlabService } from '~/services/gitlab.service.ts';
 import usePromise from '~/hooks/usePromise.ts';
-import { buildService } from '~/services/build.service.ts';
 import { socketService } from '~/services/socket.service.ts';
+import { CreateServicePayload } from '~/types/service.type.ts';
+import { servicesService } from '~/services/services.service.ts';
+import { enqueueSnackbar } from 'notistack';
+
+const RUN_COMMAND_DEFAULT = 'yarn --frozen-lockfile install; yarn build';
+const ENTRY_POINT = 'yarn start';
+const APP_PORT = '8080';
 
 function WebNewPage() {
   const [form] = Form.useForm();
@@ -17,19 +23,6 @@ function WebNewPage() {
   const runtime = Form.useWatch('runtime', form);
   const navigate = useNavigate();
   const [{ data: project, status }, doGetProjectInfo] = usePromise(gitlabService.getProjectById);
-  console.log({ project });
-  const handleBuildDeployService = () => {
-    if (project?.id) {
-      // buildService.dockerBuild({
-      //   projectId: String(project?.id),
-      //   runCommand: ['npm install'],
-      //   env: ['PORT=3000'],
-      //   entrypoint: ['node', 'index.js'],
-      //   port: '3001'
-      // });
-      buildService.test();
-    }
-  };
 
   useEffect(() => {
     if (!projectID) {
@@ -37,18 +30,25 @@ function WebNewPage() {
     }
     doGetProjectInfo({
       id: projectID
-    })
-      .then((response) => {
-        console.log({ response });
-      })
-      .catch(() => {
-        return navigate('/web/select-repo');
-      });
+    }).catch(() => {
+      return navigate('/web/select-repo');
+    });
   }, []);
 
   useEffect(() => {
     if (project?.id) {
-      console.log('CHECKKK');
+      form.setFieldsValue({
+        name: project?.path,
+        projectId: project?.id,
+        projectBranch: project?.default_branch,
+        runCommand: RUN_COMMAND_DEFAULT,
+        entryPoint: ENTRY_POINT
+      });
+    }
+  }, [project?.id]);
+
+  useEffect(() => {
+    if (project?.id) {
       socketService.socket.emit('newMessage', {
         msg: 'Hi, there!!!!'
       });
@@ -67,6 +67,28 @@ function WebNewPage() {
       socketService.socket.off('onMessage');
     };
   }, [project]);
+
+  const onDeployService = async (payload: any) => {
+    try {
+      const deployServiceDto: CreateServicePayload = {
+        name: payload?.name,
+        projectId: String(project?.id),
+        runCommand: payload?.runCommand.split(';').map((cmd: string) => String(cmd).trim()),
+        env: payload?.env,
+        appPort: APP_PORT,
+        entryPoint: payload?.entryPoint?.split(/(\s+)/).filter((e: string) => {
+          return e.trim().length > 0;
+        }),
+        projectBranch: payload?.projectBranch
+      };
+      await servicesService.create(deployServiceDto);
+      enqueueSnackbar('Create service successfully!', { variant: 'success' });
+      console.log({ deployServiceDto });
+    } catch {
+      /* empty */
+      enqueueSnackbar('Failed to create service!', { variant: 'error' });
+    }
+  };
 
   return (
     <Layout
@@ -89,7 +111,7 @@ function WebNewPage() {
           </Typography.Text>
         </div>
         <Card bordered={false}>
-          <Form form={form} initialValues={{ envVars: [''], runtime: Runtime.NODE }}>
+          <Form form={form} initialValues={{ env: [''], runtime: Runtime.NODE }} onFinish={onDeployService}>
             <Row gutter={[32, 24]}>
               <Col span={24}>
                 <Typography.Title className={'mb-0'} level={5}>
@@ -108,15 +130,14 @@ function WebNewPage() {
                 <NewFieldItem title={'Branch'} description={'The repository branch used for your web service.'} />
               </Col>
               <Col span={16}>
-                <Form.Item name={'branch'}>
+                <Form.Item name={'projectBranch'}>
                   <Select
-                    defaultValue={'main'}
-                    options={[
-                      {
-                        label: 'main',
-                        value: 'main'
-                      }
-                    ]}
+                    options={
+                      project?.branches.map((branch: string) => ({
+                        key: branch,
+                        value: branch
+                      })) || []
+                    }
                   />
                 </Form.Item>
               </Col>
@@ -130,8 +151,8 @@ function WebNewPage() {
                 />
               </Col>
               <Col span={16}>
-                <Form.Item name={'rootDir'}>
-                  <Input placeholder={'./'} />
+                <Form.Item>
+                  <Input placeholder={'./'} disabled />
                 </Form.Item>
               </Col>
               <Col span={24}>
@@ -172,7 +193,7 @@ function WebNewPage() {
                     />
                   </Col>
                   <Col span={16}>
-                    <Form.Item name={'buildCmd'}>
+                    <Form.Item name={'runCommand'}>
                       <Input
                         prefix={'>_'}
                         defaultValue={'yarn --frozen-lockfile install; yarn build'}
@@ -189,7 +210,7 @@ function WebNewPage() {
                     />
                   </Col>
                   <Col span={16}>
-                    <Form.Item name={'buildCmd'}>
+                    <Form.Item name={'entryPoint'}>
                       <Input prefix={'>_'} defaultValue={'yarn start'} spellCheck={false} />
                     </Form.Item>
                   </Col>
@@ -213,7 +234,7 @@ function WebNewPage() {
                 />
               </Col>
               <Col span={16}>
-                <Form.List name='envVars'>
+                <Form.List name='env'>
                   {(fields, { add, remove }) => (
                     <>
                       {fields.map(({ key, name }, index) => {
@@ -259,12 +280,7 @@ function WebNewPage() {
                 <Divider className={'my-0'} />
               </Col>
               <Col span={24} className={'flex justify-end '}>
-                <Button onClick={() => {
-                  gitlabService.getProjectHooks({
-                    id: project?.id
-                  });
-                }}>Test get project hooks</Button>
-                <Button type={'primary'} onClick={handleBuildDeployService}>
+                <Button type={'primary'} htmlType={'submit'}>
                   Build & Deploy Web Service
                 </Button>
               </Col>

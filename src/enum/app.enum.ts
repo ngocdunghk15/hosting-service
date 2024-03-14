@@ -12,7 +12,7 @@ export enum ServiceType {
 
 export enum Runtime {
   DOCKER = 'docker',
-  NODE = 'node'
+  NODE = 'nodejs'
 }
 
 export enum GitlabStateAction {
@@ -23,4 +23,10 @@ export enum GitlabStateAction {
 export enum Token {
   ACCESS = 'accessToken',
   REFRESH = 'refreshToken'
+}
+
+export enum ServiceStatusEnum {
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  FAILED = 'failed'
 }

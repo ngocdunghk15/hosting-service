@@ -52,7 +52,7 @@ function LoginForm() {
         ]}
       >
         <Input
-          prefix={<FontAwesomeIcon icon={faUser} />}
+            prefix={<FontAwesomeIcon icon={faUser} />}
           placeholder='Username or Email'
           autoComplete='nope'
           ref={usernameRef}

@@ -13,11 +13,12 @@ function RequiredAuthProvider(props: RequiredAuthProviderProps) {
   const isClient = useIsClient();
 
   useEffect(() => {
+    if (!isClient) return;
+
     if (!isLoggedIn) {
-      console.log("HERER");
       navigate('/auth/login');
     }
-  }, []);
+  }, [isLoggedIn, isClient]);
 
   if (!isClient) return <>Loading...</>;
 

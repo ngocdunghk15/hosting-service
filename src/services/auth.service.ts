@@ -3,6 +3,8 @@ import { httpService } from '~/services/http.service';
 import { store } from '~/redux/store';
 import { doLogout } from '~/redux/slice/auth.slice';
 import { doRevoke } from '~/redux/slice/gitlab.slice';
+import StorageService from '~/services/storage.service.ts';
+import { Token } from '~/enum/app.enum.ts';
 
 class AuthService {
   public login = async (payload: DoLoginPayload) => {
@@ -13,7 +15,13 @@ class AuthService {
     return await httpService.post<DoRegisterPayload, unknown>('/auth/register', payload, { isPublicApi: true });
   };
 
+  public getAccountInfo = async () => {
+    return await httpService.get<any>('/accounts/info');
+  };
+
   public logout = async () => {
+    StorageService.remove(Token.ACCESS);
+    StorageService.remove(Token.REFRESH);
     store.dispatch(doLogout());
     store.dispatch(doRevoke());
   };
