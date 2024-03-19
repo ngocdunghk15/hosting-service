@@ -2,7 +2,14 @@ import { Avatar, Button, Dropdown, Layout, Menu, theme, Typography } from 'antd'
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '~/redux/store';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGear, faGlobe, faLaptop, faPlus, faRightFromBracket, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCloudArrowUp,
+  faGear,
+  faGlobe,
+  faLaptop,
+  faRightFromBracket,
+  faUser
+} from '@fortawesome/free-solid-svg-icons';
 import { authService } from '~/services/auth.service';
 
 const { Header, Footer, Content } = Layout;
@@ -73,8 +80,8 @@ function AppLayout() {
               ]
             }}
           >
-            <Button className={'mr-3'} icon={<FontAwesomeIcon icon={faPlus} />} type={'primary'}>
-              New
+            <Button className={'mr-3'} icon={<FontAwesomeIcon icon={faCloudArrowUp} />} type={'primary'}>
+              Deploy
             </Button>
           </Dropdown>
           <Dropdown

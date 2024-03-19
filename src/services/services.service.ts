@@ -1,6 +1,6 @@
-import { BuildAndDeployPayload } from '~/types/service.type.ts';
+import { BuildAndDeployPayload, Service } from '~/types/service.type.ts';
 import { httpService } from '~/services/http.service.ts';
-import { LoadServiceResponse } from '~/redux/actions/services.action.ts';
+import { LoadServiceHistoriesResponse, LoadServiceResponse } from '~/redux/actions/services.action.ts';
 
 class ServicesService {
   public buildAndDeploy = async (payload: BuildAndDeployPayload) => {
@@ -11,7 +11,13 @@ class ServicesService {
     return await httpService.get<LoadServiceResponse>('/deployments');
   };
 
-  public getServiceHistories = async () => {};
+  public getById = async (id: string) => {
+    return await httpService.get<Service>(`/deployments/${id}`);
+  };
+
+  public getHistories = async (id: string) => {
+    return await httpService.get<LoadServiceHistoriesResponse>(`/deployments/${id}/histories`);
+  };
 }
 
 export const servicesService = new ServicesService();

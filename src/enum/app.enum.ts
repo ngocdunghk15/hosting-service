@@ -28,5 +28,6 @@ export enum Token {
 export enum ServiceStatusEnum {
   PENDING = 'pending',
   SUCCESS = 'success',
-  FAILED = 'failed'
+  FAILED = 'failed',
+  WAIT = 'wait'
 }

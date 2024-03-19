@@ -6,6 +6,7 @@ import AppLayout from '~/layout/AppLayout';
 import RequiredAuthProvider from '~/providers/RequiredAuthProvider';
 import AppAuthenticatedLoader from '~/providers/AppAuthenticatedLoader';
 import AppLoader from '~/providers/AppLoader.tsx';
+import ServicesRoutes from '~/routes/services';
 
 export default function AppRouting() {
   return (
@@ -22,6 +23,7 @@ export default function AppRouting() {
           <Route path={''} element={<AppLayout />}>
             <Route path={'/'} element={<HomePage />} />
             <Route path={'/web/*'} element={<WebRoutes />} />
+            <Route path={'/services/*'} element={<ServicesRoutes />} />
           </Route>
         </Route>
         <Route path={'/auth/*'} element={<AuthRoutes />} />;

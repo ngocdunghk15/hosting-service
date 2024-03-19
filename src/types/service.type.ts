@@ -7,6 +7,7 @@ export interface EnvironmentVariable {
 }
 
 export interface Service {
+  _id: string;
   account: Account;
   name: string;
   projectPath: string;
@@ -26,9 +27,22 @@ export interface Service {
   gitlabHookId: string;
   githubHookId: string;
   type: ServiceType;
+  updatedAt: Date;
+  createdAt: Date;
 }
 
 export type BuildAndDeployPayload = Pick<
   Service,
   'name' | 'projectId' | 'runCommand' | 'env' | 'appPort' | 'entryPoint' | 'projectBranch' | 'runtime'
 >;
+
+export interface ServiceHistory {
+  _id: string;
+  buildStatus: ServiceStatusEnum;
+  deployStatus: ServiceStatusEnum;
+  deployment: string;
+  message: string;
+  time: number;
+  updatedAt: Date;
+  createdAt: Date;
+}

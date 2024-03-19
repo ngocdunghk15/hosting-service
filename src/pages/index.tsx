@@ -5,9 +5,13 @@ import { useAppDispatch, useAppSelector } from '~/redux/store.ts';
 import { useEffect } from 'react';
 import { loadServices } from '~/redux/actions/services.action.ts';
 import { Service } from '~/types/service.type.ts';
+import { useNavigate } from 'react-router-dom';
+import { Status } from '~/enum/app.enum.ts';
+import BadgeStatus from '~/components/shared/BadgeStatus';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const services = useAppSelector((state) => state.services.services.data);
   const loadServicesStatus = useAppSelector((state) => state.services.services.status);
 
@@ -22,16 +26,26 @@ export default function HomePage() {
       title: 'Status',
       dataIndex: 'status',
       render: (status) => {
-        console.log({ status });
-        return <>{String(status ? status : 'IDLE').toUpperCase()}</>;
+        return <BadgeStatus status={status} />;
       }
     },
     {
-      key: 'type',
-      title: 'Type',
-      dataIndex: 'type',
-      render: (_) => {
-        return <>Service Type</>;
+      key: 'domain',
+      title: 'Domain',
+      dataIndex: 'domain',
+      render: (domain) => {
+        return (
+          <Typography.Link
+            onClick={(e) => {
+              e.stopPropagation();
+              if (domain) {
+                window.open(`https://${domain}.duongbd.online `, '_blank');
+              }
+            }}
+          >
+            {domain ? `${domain}.duongbd.online ` : 'NULL'}
+          </Typography.Link>
+        );
       }
     },
     {
@@ -39,7 +53,7 @@ export default function HomePage() {
       title: 'Runtime',
       dataIndex: 'runtime',
       render: (runtime) => {
-        return <>Runtime</>;
+        return <Typography>{String(runtime ? runtime : 'NULL').toUpperCase()}</Typography>;
       }
     },
     {
@@ -53,7 +67,7 @@ export default function HomePage() {
     {
       key: 'actions',
       title: 'Actions',
-      render: (_, record) => {
+      render: (_, __) => {
         return <FontAwesomeIcon icon={faEllipsis} />;
       }
     }
@@ -112,7 +126,18 @@ export default function HomePage() {
           </Button>
         </Dropdown>
       </div>
-      <Table columns={columns} dataSource={services} />
+      <Table
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              navigate(`/services/${record?._id}`);
+            }
+          };
+        }}
+        loading={loadServicesStatus === Status.PENDING}
+        columns={columns}
+        dataSource={services}
+      />
     </Layout>
   );
 }
