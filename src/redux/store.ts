@@ -4,16 +4,18 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { authSlice } from '~/redux/slice/auth.slice';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import { gitlabSlice } from '~/redux/slice/gitlab.slice.ts';
+import { servicesSlice } from '~/redux/slice/services.slice.ts';
 
 const reducers = combineReducers({
   auth: authSlice.reducer,
-  gitlab: gitlabSlice.reducer
+  gitlab: gitlabSlice.reducer,
+  services: servicesSlice.reducer
 });
 
 const persistConfig = {
   key: 'u2-music-dashboard',
   storage,
-  blacklist: ['auth']
+  blacklist: ['auth', 'gitlab', 'services']
 };
 
 const persistedReducer = persistReducer<ReturnType<typeof reducers>>(persistConfig, reducers);

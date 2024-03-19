@@ -7,25 +7,28 @@ export interface EnvironmentVariable {
 }
 
 export interface Service {
-  name: string;
-  projectId: string;
-  projectBranch: string;
-  runCommand: string[];
-  env: EnvironmentVariable[];
   account: Account;
-  registry: string;
+  name: string;
   projectPath: string;
   servicePort: string;
   appPort: string;
   domain: string;
   entryPoint: string[];
+  env: EnvironmentVariable[];
+  runCommand: string[];
+  projectId: string;
+  projectBranch: string;
   gitType: string;
-  runtime: Runtime;
   status: ServiceStatusEnum;
+  runtime: Runtime;
+  registry: string;
+  dnsRecordId: string;
+  gitlabHookId: string;
+  githubHookId: string;
   type: ServiceType;
 }
 
-export type CreateServicePayload = Pick<
+export type BuildAndDeployPayload = Pick<
   Service,
-  'name' | 'projectId' | 'runCommand' | 'env' | 'appPort' | 'entryPoint' | 'projectBranch'
+  'name' | 'projectId' | 'runCommand' | 'env' | 'appPort' | 'entryPoint' | 'projectBranch' | 'runtime'
 >;

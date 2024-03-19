@@ -19,11 +19,11 @@ export const initialGitlabState: GitlabSliceState = {
   isConnected: false,
   account: {
     data: {} as GitlabAccount,
-    status: Status.PENDING
+    status: Status.IDLE
   },
   projects: {
     data: [],
-    status: Status.PENDING
+    status: Status.IDLE
   }
 };
 

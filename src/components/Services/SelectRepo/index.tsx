@@ -1,7 +1,7 @@
 import { Avatar, Button, Card, Col, Divider, Form, Input, List, Row, Select, Space, Typography } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub, faGitlab } from '@fortawesome/free-brands-svg-icons';
-import { Service, Status } from '~/enum/app.enum.ts';
+import { ServiceType, Status } from '~/enum/app.enum.ts';
 import { useNavigate } from 'react-router-dom';
 import ConnectGitlabButton from '~/components/Services/SelectRepo/ConnectGitlabButton';
 import { useEffect } from 'react';
@@ -15,7 +15,7 @@ dayjs.extend(relativeTime);
 const { Search } = Input;
 
 interface SelectRepoProps {
-  type: Service;
+  type: ServiceType;
 }
 
 export default function SelectRepo(props: SelectRepoProps) {

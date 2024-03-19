@@ -8,9 +8,9 @@ import { useEffect } from 'react';
 import { gitlabService } from '~/services/gitlab.service.ts';
 import usePromise from '~/hooks/usePromise.ts';
 import { socketService } from '~/services/socket.service.ts';
-import { CreateServicePayload } from '~/types/service.type.ts';
 import { servicesService } from '~/services/services.service.ts';
 import { enqueueSnackbar } from 'notistack';
+import { BuildAndDeployPayload } from '~/types/service.type.ts';
 
 const RUN_COMMAND_DEFAULT = 'yarn --frozen-lockfile install; yarn build';
 const ENTRY_POINT = 'yarn start';
@@ -70,7 +70,7 @@ function WebNewPage() {
 
   const onDeployService = async (payload: any) => {
     try {
-      const deployServiceDto: CreateServicePayload = {
+      const deployServiceDto: BuildAndDeployPayload = {
         name: payload?.name,
         projectId: String(project?.id),
         runCommand: payload?.runCommand.split(';').map((cmd: string) => String(cmd).trim()),
@@ -79,11 +79,11 @@ function WebNewPage() {
         entryPoint: payload?.entryPoint?.split(/(\s+)/).filter((e: string) => {
           return e.trim().length > 0;
         }),
-        projectBranch: payload?.projectBranch
+        projectBranch: payload?.projectBranch,
+        runtime: payload?.runtime
       };
-      await servicesService.create(deployServiceDto);
+      await servicesService.buildAndDeploy(deployServiceDto);
       enqueueSnackbar('Create service successfully!', { variant: 'success' });
-      console.log({ deployServiceDto });
     } catch {
       /* empty */
       enqueueSnackbar('Failed to create service!', { variant: 'error' });
@@ -281,7 +281,7 @@ function WebNewPage() {
               </Col>
               <Col span={24} className={'flex justify-end '}>
                 <Button type={'primary'} htmlType={'submit'}>
-                  Build & Deploy Web Service
+                  Build & Deploy Service
                 </Button>
               </Col>
             </Row>

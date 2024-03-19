@@ -1,8 +1,67 @@
-import { Button, Dropdown, Input, Layout, Select, Table, Typography } from 'antd';
+import { Button, Dropdown, Input, Layout, Select, Table, TableProps, Typography } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGlobe, faLaptop, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis, faGlobe, faLaptop, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useAppDispatch, useAppSelector } from '~/redux/store.ts';
+import { useEffect } from 'react';
+import { loadServices } from '~/redux/actions/services.action.ts';
+import { Service } from '~/types/service.type.ts';
 
 export default function HomePage() {
+  const dispatch = useAppDispatch();
+  const services = useAppSelector((state) => state.services.services.data);
+  const loadServicesStatus = useAppSelector((state) => state.services.services.status);
+
+  const columns: TableProps<Service>['columns'] = [
+    {
+      key: 'name',
+      title: 'Service name',
+      dataIndex: 'name'
+    },
+    {
+      key: 'status',
+      title: 'Status',
+      dataIndex: 'status',
+      render: (status) => {
+        console.log({ status });
+        return <>{String(status ? status : 'IDLE').toUpperCase()}</>;
+      }
+    },
+    {
+      key: 'type',
+      title: 'Type',
+      dataIndex: 'type',
+      render: (_) => {
+        return <>Service Type</>;
+      }
+    },
+    {
+      key: 'runtime',
+      title: 'Runtime',
+      dataIndex: 'runtime',
+      render: (runtime) => {
+        return <>Runtime</>;
+      }
+    },
+    {
+      key: 'lastDeployed',
+      title: 'Last Deployed',
+      dataIndex: 'updatedAt',
+      render: (updatedAt) => {
+        return <>{new Date(updatedAt).toLocaleString()}</>;
+      }
+    },
+    {
+      key: 'actions',
+      title: 'Actions',
+      render: (_, record) => {
+        return <FontAwesomeIcon icon={faEllipsis} />;
+      }
+    }
+  ];
+
+  useEffect(() => {
+    dispatch(loadServices());
+  }, []);
   return (
     <Layout>
       <div className={'mb-12'}>
@@ -53,7 +112,7 @@ export default function HomePage() {
           </Button>
         </Dropdown>
       </div>
-      <Table />
+      <Table columns={columns} dataSource={services} />
     </Layout>
   );
 }
