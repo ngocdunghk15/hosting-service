@@ -12,7 +12,8 @@ export enum ServiceType {
 
 export enum Runtime {
   DOCKER = 'docker',
-  NODE = 'nodejs'
+  NODE = 'nodejs',
+  SPA = 'spa'
 }
 
 export enum GitlabStateAction {

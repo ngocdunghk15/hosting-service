@@ -12,15 +12,15 @@ import { servicesService } from '~/services/services.service.ts';
 import { enqueueSnackbar } from 'notistack';
 import { BuildAndDeployPayload } from '~/types/service.type.ts';
 
-const RUN_COMMAND_DEFAULT = 'yarn --frozen-lockfile install; yarn build';
-const ENTRY_POINT = 'yarn start';
+const RUN_COMMAND_DEFAULT = '';
+const ENTRY_POINT = '';
 const APP_PORT = '8080';
 
 function WebNewPage() {
   const [form] = Form.useForm();
   const [searchParams] = useSearchParams();
   const projectID = searchParams.get('projectID');
-  const runtime = Form.useWatch('runtime', form);
+  // const runtime = Form.useWatch('runtime', form);
   const navigate = useNavigate();
   const [{ data: project, status }, doGetProjectInfo] = usePromise(gitlabService.getProjectById);
 
@@ -82,7 +82,8 @@ function WebNewPage() {
         projectBranch: payload?.projectBranch,
         runtime: payload?.runtime
       };
-      await servicesService.buildAndDeploy(deployServiceDto);
+      const response: any = await servicesService.buildAndDeploy(deployServiceDto);
+      navigate(`/services/${response?.data?.data?._id}`);
       enqueueSnackbar('Create service successfully!', { variant: 'success' });
     } catch {
       /* empty */
@@ -171,51 +172,43 @@ function WebNewPage() {
                   <Select
                     options={[
                       {
-                        label: 'Docker',
-                        value: Runtime.DOCKER
+                        label: 'NodeJS',
+                        value: Runtime.NODE
                       },
                       {
-                        label: 'Node',
-                        value: Runtime.NODE
+                        label: 'JS',
+                        value: Runtime.SPA
                       }
                     ]}
                   />
                 </Form.Item>
               </Col>
-              {runtime === Runtime.NODE && (
-                <>
-                  <Col span={8}>
-                    <NewFieldItem
-                      title={'Build Command'}
-                      description={
-                        'This command runs in the root directory of your repository when a new version of your code is pushed, or when you deploy manually. It is typically a script that installs libraries, runs migrations, or compiles resources needed by your app'
-                      }
-                    />
-                  </Col>
-                  <Col span={16}>
-                    <Form.Item name={'runCommand'}>
-                      <Input
-                        prefix={'>_'}
-                        defaultValue={'yarn --frozen-lockfile install; yarn build'}
-                        spellCheck={false}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={8}>
-                    <NewFieldItem
-                      title={'Start Command'}
-                      description={
-                        'This command runs in the root directory of your app and is responsible for starting its processes. It is typically used to start a webserver for your app. It can access environment variables defined by you in UET hosting.'
-                      }
-                    />
-                  </Col>
-                  <Col span={16}>
-                    <Form.Item name={'entryPoint'}>
-                      <Input prefix={'>_'} defaultValue={'yarn start'} spellCheck={false} />
-                    </Form.Item>
-                  </Col>
-                </>
-              )}
+              <Col span={8}>
+                <NewFieldItem
+                  title={'Build Command'}
+                  description={
+                    'This command runs in the root directory of your repository when a new version of your code is pushed, or when you deploy manually. It is typically a script that installs libraries, runs migrations, or compiles resources needed by your app'
+                  }
+                />
+              </Col>
+              <Col span={16}>
+                <Form.Item name={'runCommand'} rules={[{ required: true, message: 'Please enter build command' }]}>
+                  <Input prefix={'>_'} defaultValue={''} spellCheck={false} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <NewFieldItem
+                  title={'Start Command'}
+                  description={
+                    'This command runs in the root directory of your app and is responsible for starting its processes. It is typically used to start a webserver for your app. It can access environment variables defined by you in UET hosting.'
+                  }
+                />
+              </Col>
+              <Col span={16}>
+                <Form.Item name={'entryPoint'} rules={[{ required: true, message: 'Please enter start command' }]}>
+                  <Input prefix={'>_'} defaultValue={''} spellCheck={false} />
+                </Form.Item>
+              </Col>
               <Col span={24}>
                 <Divider className={'my-0'} />
               </Col>

@@ -124,7 +124,10 @@ export default function HomePage() {
               {
                 key: 'web-service',
                 label: 'Web service',
-                icon: <FontAwesomeIcon icon={faGlobe} />
+                icon: <FontAwesomeIcon icon={faGlobe} />,
+                onClick: () => {
+                  navigate('/web/create');
+                }
               }
             ]
           }}
