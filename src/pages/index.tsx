@@ -2,7 +2,7 @@ import { Button, Dropdown, Input, Layout, Table, TableProps, Tag, Typography } f
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis, faGlobe, faLaptop, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useAppDispatch, useAppSelector } from '~/redux/store.ts';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { loadServices } from '~/redux/actions/services.action.ts';
 import { Service } from '~/types/service.type.ts';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ import BadgeStatus from '~/components/shared/BadgeStatus';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 
 export default function HomePage() {
+  const isFirstLoad = useRef(true);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const services = useAppSelector((state) => state.services.services.data);
@@ -96,7 +97,9 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
-    dispatch(loadServices());
+    dispatch(loadServices()).finally(() => {
+      isFirstLoad.current = false;
+    });
     const timer = setInterval(() => {
       dispatch(loadServices());
     }, 10000);
@@ -152,7 +155,7 @@ export default function HomePage() {
             }
           };
         }}
-        loading={loadServicesStatus === Status.PENDING}
+        loading={loadServicesStatus === Status.PENDING && isFirstLoad.current}
         columns={columns}
         dataSource={services}
         pagination={{
