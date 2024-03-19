@@ -51,7 +51,10 @@ function AppLayout() {
             items={[
               {
                 key: 'dashboard',
-                label: 'Dashboard'
+                label: 'Dashboard',
+                onClick: () => {
+                  navigate('/');
+                }
               },
               {
                 key: 'guideline',
@@ -67,7 +70,8 @@ function AppLayout() {
                 {
                   key: 'static-site',
                   label: 'Static site',
-                  icon: <FontAwesomeIcon icon={faLaptop} />
+                  icon: <FontAwesomeIcon icon={faLaptop} />,
+                  disabled: true
                 },
                 {
                   key: 'web-service',
@@ -106,12 +110,14 @@ function AppLayout() {
                 {
                   key: 'account',
                   label: 'Personal information',
-                  icon: <FontAwesomeIcon icon={faUser} />
+                  icon: <FontAwesomeIcon icon={faUser} />,
+                  disabled: true
                 },
                 {
                   key: 'settings',
                   label: 'Settings & privacy',
-                  icon: <FontAwesomeIcon icon={faGear} />
+                  icon: <FontAwesomeIcon icon={faGear} />,
+                  disabled: true
                 },
                 {
                   type: 'divider'

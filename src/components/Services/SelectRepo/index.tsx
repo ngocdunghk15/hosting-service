@@ -77,6 +77,7 @@ export default function SelectRepo(props: SelectRepoProps) {
             </Form.Item>
             <Form.Item className={'flex-grow-1'}>
               <Search
+                disabled={true}
                 className={'w-full'}
                 placeholder='Search repositories...'
                 onSearch={onSearch}
@@ -138,7 +139,7 @@ export default function SelectRepo(props: SelectRepoProps) {
             available if the repository has not been configured for UET Hosting.
           </Typography.Text>
           <Space.Compact className={'w-full mt-6 flex items-center'}>
-            <Input placeholder={'https://github.com/uet-hosting-examples/repository-name'} />
+            <Input disabled={true} placeholder={'https://github.com/uet-hosting-examples/repository-name'} />
             <Button disabled type={'primary'}>
               Import
             </Button>

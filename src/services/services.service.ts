@@ -7,16 +7,16 @@ class ServicesService {
     return await httpService.post('/core/deploy-project', payload);
   };
 
-  public getAll = async () => {
-    return await httpService.get<LoadServiceResponse>('/deployments');
+  public getAll = async (queries?: Record<string, string | number>) => {
+    return await httpService.get<LoadServiceResponse>('/deployments', queries);
   };
 
   public getById = async (id: string) => {
     return await httpService.get<Service>(`/deployments/${id}`);
   };
 
-  public getHistories = async (id: string) => {
-    return await httpService.get<LoadServiceHistoriesResponse>(`/deployments/${id}/histories`);
+  public getHistories = async (id: string, queries?: Record<string, string | number>) => {
+    return await httpService.get<LoadServiceHistoriesResponse>(`/deployments/${id}/histories`, queries);
   };
 }
 

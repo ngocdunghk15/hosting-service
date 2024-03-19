@@ -108,6 +108,7 @@ function ServicePage() {
       <Divider className={'my-5'} />
       <div className={'flex gap-8 mb-6'}>
         <Input
+          disabled={true}
           prefix={<FontAwesomeIcon icon={faMagnifyingGlass} />}
           className={'flex-grow-1'}
           placeholder={'Search deployments...'}
@@ -117,6 +118,9 @@ function ServicePage() {
         loading={loadServiceHistoriesStatus === Status.PENDING && isFirstLoad.current}
         columns={columns}
         dataSource={serviceHistories}
+        pagination={{
+          pageSize: 10
+        }}
       />
     </Layout>
   );

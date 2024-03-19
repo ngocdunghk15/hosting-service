@@ -43,7 +43,7 @@ function WebCreatePage() {
             </Form.Item>
             <Form.Item>
               <Card bordered={false} className={'w-full'} styles={{ body: { padding: 0 } }}>
-                <Radio className={'w-full'} style={{ padding: 24 }} value={'/web/deploy'}>
+                <Radio disabled={true} className={'w-full'} style={{ padding: 24 }} value={'/web/deploy'}>
                   Deploy an existing image from a registry
                 </Radio>
               </Card>

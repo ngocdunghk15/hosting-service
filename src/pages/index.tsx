@@ -1,4 +1,4 @@
-import { Button, Dropdown, Input, Layout, Select, Table, TableProps, Typography } from 'antd';
+import { Button, Dropdown, Input, Layout, Table, TableProps, Tag, Typography } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis, faGlobe, faLaptop, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useAppDispatch, useAppSelector } from '~/redux/store.ts';
@@ -8,6 +8,7 @@ import { Service } from '~/types/service.type.ts';
 import { useNavigate } from 'react-router-dom';
 import { Status } from '~/enum/app.enum.ts';
 import BadgeStatus from '~/components/shared/BadgeStatus';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -53,7 +54,11 @@ export default function HomePage() {
       title: 'Runtime',
       dataIndex: 'runtime',
       render: (runtime) => {
-        return <Typography>{String(runtime ? runtime : 'NULL').toUpperCase()}</Typography>;
+        return (
+          <Tag>
+            <Typography>{String(runtime ? runtime : 'NULL').toUpperCase()}</Typography>
+          </Tag>
+        );
       }
     },
     {
@@ -67,8 +72,25 @@ export default function HomePage() {
     {
       key: 'actions',
       title: 'Actions',
-      render: (_, __) => {
-        return <FontAwesomeIcon icon={faEllipsis} />;
+      render: (_, record) => {
+        return (
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: 'view',
+                  label: 'View',
+                  icon: <FontAwesomeIcon icon={faEye} />,
+                  onClick: () => {
+                    navigate(`/services/${record?._id}`);
+                  }
+                }
+              ]
+            }}
+          >
+            <FontAwesomeIcon className={'cursor-pointer'} icon={faEllipsis} />
+          </Dropdown>
+        );
       }
     }
   ];
@@ -84,25 +106,10 @@ export default function HomePage() {
       </div>
       <div className={'flex gap-8 mb-6'}>
         <Input
+          disabled={true}
           prefix={<FontAwesomeIcon icon={faMagnifyingGlass} />}
           className={'flex-grow-1'}
           placeholder={'Search services...'}
-        />
-        <Select
-          defaultValue={'sort-by-activity' as any}
-          style={{ width: 240 }}
-          options={
-            [
-              {
-                value: 'sort-by-activity',
-                label: 'Sort by activity'
-              },
-              {
-                value: 'sort-by-name',
-                label: 'Sort by name'
-              }
-            ] as any
-          }
         />
         <Dropdown
           trigger={['click']}
@@ -111,7 +118,8 @@ export default function HomePage() {
               {
                 key: 'static-site',
                 label: 'Static site',
-                icon: <FontAwesomeIcon icon={faLaptop} />
+                icon: <FontAwesomeIcon icon={faLaptop} />,
+                disabled: true
               },
               {
                 key: 'web-service',
@@ -137,6 +145,9 @@ export default function HomePage() {
         loading={loadServicesStatus === Status.PENDING}
         columns={columns}
         dataSource={services}
+        pagination={{
+          pageSize: 10
+        }}
       />
     </Layout>
   );

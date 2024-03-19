@@ -27,7 +27,7 @@ export interface LoadServiceHistoriesResponse {
 
 export const loadServices = createAsyncThunk<LoadServiceResponse>('services/load-services', async () => {
   // eslint-disable-next-line no-unsafe-optional-chaining
-  const { data, paginationOptions } = (await servicesService.getAll())?.data;
+  const { data, paginationOptions } = (await servicesService.getAll({ limit: 100 }))?.data;
   return {
     data,
     paginationOptions
@@ -38,7 +38,7 @@ export const loadServiceHistories = createAsyncThunk<LoadServiceHistoriesRespons
   'services/load-services-history',
   async (id) => {
     // eslint-disable-next-line no-unsafe-optional-chaining
-    const { data, paginationOptions } = (await servicesService.getHistories(id))?.data;
+    const { data, paginationOptions } = (await servicesService.getHistories(id, { limit: 100 }))?.data;
     return {
       data: data,
       paginationOptions: paginationOptions
