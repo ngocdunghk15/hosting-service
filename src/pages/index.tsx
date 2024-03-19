@@ -96,6 +96,7 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
+    dispatch(loadServices());
     const timer = setInterval(() => {
       dispatch(loadServices());
     }, 10000);
