@@ -1,6 +1,6 @@
-import { Button, Dropdown, Input, Layout, Table, TableProps, Tag, Typography } from 'antd';
+import { Button, Dropdown, Input, Layout, message, Table, TableProps, Tag, Typography } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsis, faGlobe, faLaptop, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis, faGlobe, faLaptop, faMagnifyingGlass, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useAppDispatch, useAppSelector } from '~/redux/store.ts';
 import { useEffect, useRef } from 'react';
 import { loadServices } from '~/redux/actions/services.action.ts';
@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Status } from '~/enum/app.enum.ts';
 import BadgeStatus from '~/components/shared/BadgeStatus';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { servicesService } from '~/services/services.service.ts';
 
 export default function HomePage() {
   const isFirstLoad = useRef(true);
@@ -84,6 +85,23 @@ export default function HomePage() {
                   icon: <FontAwesomeIcon icon={faEye} />,
                   onClick: () => {
                     navigate(`/services/${record?._id}`);
+                  }
+                },
+                {
+                  type: 'divider'
+                },
+                {
+                  danger: true,
+                  key: 'remove',
+                  label: 'Remove',
+                  icon: <FontAwesomeIcon icon={faTrash} />,
+                  onClick: async () => {
+                    try {
+                      await servicesService.remove(record?._id);
+                      message.success('Remove service successfully!');
+                    } catch {
+                      message.error('Failed to remove service!');
+                    }
                   }
                 }
               ]

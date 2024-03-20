@@ -15,6 +15,10 @@ class ServicesService {
     return await httpService.get<Service>(`/deployments/${id}`);
   };
 
+  public remove = async (id: string) => {
+    return await httpService.delete(`/core/delete-deploy-project/${id}`);
+  };
+
   public getHistories = async (id: string, queries?: Record<string, string | number>) => {
     return await httpService.get<LoadServiceHistoriesResponse>(`/deployments/${id}/histories`, queries);
   };
