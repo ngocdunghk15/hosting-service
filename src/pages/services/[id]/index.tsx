@@ -91,9 +91,13 @@ function ServicePage() {
             <Typography>Domain:</Typography>
             <Typography.Link
               onClick={() => {
-                window.open(`https://${service?.domain}.duongbd.online`, '_blank');
+                if (service?.domain) {
+                  window.open(`https://${service?.domain}.duongbd.online`, '_blank');
+                }
               }}
-            >{`https://${service?.domain}.duongbd.online`}</Typography.Link>
+            >
+              {service?.domain ? `https://${service?.domain}.duongbd.online` : 'Waiting for deployment to be ready'}
+            </Typography.Link>
           </Col>
           <Col xs={24} md={8}>
             <Typography>Status:</Typography>

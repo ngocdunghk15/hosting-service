@@ -4,7 +4,7 @@ import { Runtime, Status } from '~/enum/app.enum';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleMinus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { gitlabService } from '~/services/gitlab.service.ts';
 import usePromise from '~/hooks/usePromise.ts';
 import { socketService } from '~/services/socket.service.ts';
@@ -15,14 +15,16 @@ import { BuildAndDeployPayload } from '~/types/service.type.ts';
 const RUN_COMMAND_DEFAULT = '';
 const ENTRY_POINT = '';
 const APP_PORT = '8080';
+const OUTPUT_DIRECTORY = 'dist';
 
 function WebNewPage() {
   const [form] = Form.useForm();
   const [searchParams] = useSearchParams();
   const projectID = searchParams.get('projectID');
-  // const runtime = Form.useWatch('runtime', form);
+  const runtime = Form.useWatch('runtime', form);
   const navigate = useNavigate();
   const [{ data: project, status }, doGetProjectInfo] = usePromise(gitlabService.getProjectById);
+  const [isDelay, setIsDelay] = useState(false);
 
   useEffect(() => {
     if (!projectID) {
@@ -42,7 +44,8 @@ function WebNewPage() {
         projectId: project?.id,
         projectBranch: project?.default_branch,
         runCommand: RUN_COMMAND_DEFAULT,
-        entryPoint: ENTRY_POINT
+        entryPoint: ENTRY_POINT,
+        buildDist: OUTPUT_DIRECTORY
       });
     }
   }, [project?.id]);
@@ -70,21 +73,36 @@ function WebNewPage() {
 
   const onDeployService = async (payload: any) => {
     try {
-      const deployServiceDto: BuildAndDeployPayload = {
+      setIsDelay(true);
+      const deployServiceDto: any = {
         name: payload?.name,
         projectId: String(project?.id),
-        runCommand: payload?.runCommand.split(';').map((cmd: string) => String(cmd).trim()),
         env: payload?.env,
-        appPort: APP_PORT,
-        entryPoint: payload?.entryPoint?.split(/(\s+)/).filter((e: string) => {
-          return e.trim().length > 0;
-        }),
         projectBranch: payload?.projectBranch,
         runtime: payload?.runtime
       };
-      const response: any = await servicesService.buildAndDeploy(deployServiceDto);
-      navigate(`/services/${response?.data?.data?._id}`);
-      enqueueSnackbar('Create service successfully!', { variant: 'success' });
+
+      if (runtime === Runtime.NODE) {
+        deployServiceDto.appPort = APP_PORT;
+        deployServiceDto.runCommand = payload?.runCommand.split(';').map((cmd: string) => String(cmd).trim());
+        deployServiceDto.entryPoint = payload?.entryPoint?.split(/(\s+)/).filter((e: string) => {
+          return e.trim().length > 0;
+        });
+      }
+
+      if (runtime === Runtime.SPA) {
+        deployServiceDto.installCommand = payload?.installCommand;
+        deployServiceDto.buildCommand = payload?.buildCommand;
+        deployServiceDto.buildDist = payload?.buildDist;
+      }
+
+      const response: any = await servicesService.buildAndDeploy(deployServiceDto as BuildAndDeployPayload);
+      setTimeout(() => {
+        setIsDelay(false);
+
+        navigate(`/services/${response?.data?.data?._id}`);
+        enqueueSnackbar('Create service successfully!', { variant: 'success' });
+      }, 2000);
     } catch {
       /* empty */
       enqueueSnackbar('Failed to create service!', { variant: 'error' });
@@ -112,7 +130,7 @@ function WebNewPage() {
           </Typography.Text>
         </div>
         <Card bordered={false}>
-          <Form form={form} initialValues={{ env: [''], runtime: Runtime.NODE }} onFinish={onDeployService}>
+          <Form form={form} initialValues={{ env: [''] }} onFinish={onDeployService}>
             <Row gutter={[32, 24]}>
               <Col span={24}>
                 <Typography.Title className={'mb-0'} level={5}>
@@ -168,7 +186,7 @@ function WebNewPage() {
                 <NewFieldItem title={'Runtime'} description={'The runtime for your web service.'} />
               </Col>
               <Col span={16}>
-                <Form.Item name={'runtime'}>
+                <Form.Item name={'runtime'} rules={[{ required: true, message: 'Please choose the runtime' }]}>
                   <Select
                     options={[
                       {
@@ -176,39 +194,99 @@ function WebNewPage() {
                         value: Runtime.NODE
                       },
                       {
-                        label: 'JS',
+                        label: 'Javascript',
                         value: Runtime.SPA
                       }
                     ]}
                   />
                 </Form.Item>
               </Col>
-              <Col span={8}>
-                <NewFieldItem
-                  title={'Build Command'}
-                  description={
-                    'This command runs in the root directory of your repository when a new version of your code is pushed, or when you deploy manually. It is typically a script that installs libraries, runs migrations, or compiles resources needed by your app'
-                  }
-                />
-              </Col>
-              <Col span={16}>
-                <Form.Item name={'runCommand'} rules={[{ required: true, message: 'Please enter build command' }]}>
-                  <Input prefix={'>_'} defaultValue={''} spellCheck={false} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <NewFieldItem
-                  title={'Start Command'}
-                  description={
-                    'This command runs in the root directory of your app and is responsible for starting its processes. It is typically used to start a webserver for your app. It can access environment variables defined by you in UET hosting.'
-                  }
-                />
-              </Col>
-              <Col span={16}>
-                <Form.Item name={'entryPoint'} rules={[{ required: true, message: 'Please enter start command' }]}>
-                  <Input prefix={'>_'} defaultValue={''} spellCheck={false} />
-                </Form.Item>
-              </Col>
+              {runtime === Runtime.NODE && (
+                <>
+                  <Col span={8}>
+                    <NewFieldItem
+                      title={'Run Command'}
+                      description={
+                        'This command runs in the root directory of your repository when a new version of your code is pushed, or when you deploy manually. It is typically a script that installs libraries, runs migrations, or compiles resources needed by your app'
+                      }
+                    />
+                  </Col>
+                  <Col span={16}>
+                    <Form.Item name={'runCommand'} rules={[{ required: true, message: 'Please enter build command' }]}>
+                      <Input
+                        prefix={'>_'}
+                        placeholder={'Example: yarn --frozen-lockfile install; yarn build...'}
+                        spellCheck={false}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <NewFieldItem
+                      title={'Start Command'}
+                      description={
+                        'This command runs in the root directory of your app and is responsible for starting its processes. It is typically used to start a webserver for your app. It can access environment variables defined by you in UET hosting.'
+                      }
+                    />
+                  </Col>
+                  <Col span={16}>
+                    <Form.Item name={'entryPoint'} rules={[{ required: true, message: 'Please enter start command' }]}>
+                      <Input prefix={'>_'} placeholder={'Example: node index.js...'} spellCheck={false} />
+                    </Form.Item>
+                  </Col>
+                </>
+              )}
+              {runtime === Runtime.SPA && (
+                <>
+                  <Col span={8}>
+                    <NewFieldItem
+                      title={'Install Command'}
+                      description={
+                        'This command runs in the root directory of your repository when a new version of your code is pushed, or when you deploy manually. It is typically a script that installs libraries, runs migrations, or compiles resources needed by your app'
+                      }
+                    />
+                  </Col>
+                  <Col span={16}>
+                    <Form.Item
+                      name={'installCommand'}
+                      rules={[{ required: true, message: 'Please enter install command' }]}
+                    >
+                      <Input prefix={'>_'} placeholder={'Example: npm install...'} spellCheck={false} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <NewFieldItem
+                      title={'Build Command'}
+                      description={
+                        'This command runs in the root directory of your repository when a new version of your code is pushed, or when you deploy manually. It is typically a script that installs libraries, runs migrations, or compiles resources needed by your app'
+                      }
+                    />
+                  </Col>
+                  <Col span={16}>
+                    <Form.Item
+                      name={'buildCommand'}
+                      rules={[{ required: true, message: 'Please enter build command' }]}
+                    >
+                      <Input prefix={'>_'} placeholder={'Example: npm run build...'} spellCheck={false} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <NewFieldItem
+                      title={'Output Directory'}
+                      description={
+                        'The Output Directory is a designated location where the results, outputs, or files generated from a process, program, or operation are stored.'
+                      }
+                    />
+                  </Col>
+                  <Col span={16}>
+                    <Form.Item
+                      name={'buildDist'}
+                      rules={[{ required: true, message: 'Please enter output directory' }]}
+                    >
+                      <Input spellCheck={false} />
+                    </Form.Item>
+                  </Col>
+                </>
+              )}
               <Col span={24}>
                 <Divider className={'my-0'} />
               </Col>
@@ -273,7 +351,7 @@ function WebNewPage() {
                 <Divider className={'my-0'} />
               </Col>
               <Col span={24} className={'flex justify-end '}>
-                <Button type={'primary'} htmlType={'submit'}>
+                <Button type={'primary'} htmlType={'submit'} loading={isDelay}>
                   Build & Deploy Service
                 </Button>
               </Col>
