@@ -14,7 +14,9 @@ function AppLoader() {
     dispatch(getAccountInfo());
   }, []);
 
-  if (getAccountInfoStatus === Status.PENDING || !isClient) return <>Loading...</>;
+  console.log({ getAccountInfoStatus, isClient });
+
+  if (getAccountInfoStatus === Status.PENDING || !isClient) return <>Loading...App</>;
 
   return <Outlet />;
 }

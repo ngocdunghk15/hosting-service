@@ -14,7 +14,7 @@ function PassAuthProvider() {
     }
   }, [isLoggedIn]);
 
-  if (!isClient) return <>Loading...</>;
+  if (!isClient) return <>Loading...PassAuth</>;
   return <Outlet />;
 }
 

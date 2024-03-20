@@ -1,7 +1,7 @@
 import { ServiceStatusEnum } from '~/enum/app.enum.ts';
 import FailedCircle from '~/components/shared/StageStatus/FailedCircle';
 import PendingCircle from '~/components/shared/StageStatus/PendingCircle';
-import WaitCircle from '~/components/shared/StageStatus/WaitCircle';
+// import WaitCircle from '~/components/shared/StageStatus/WaitCircle';
 import SuccessCircle from '~/components/shared/StageStatus/SucessCircle';
 
 interface StageStatusProps {
@@ -34,7 +34,7 @@ function StageStatus(props: StageStatusProps) {
     default: {
       return (
         <div>
-          <WaitCircle />
+          <PendingCircle />
         </div>
       );
     }

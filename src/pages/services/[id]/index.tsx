@@ -29,8 +29,11 @@ function ServicePage() {
           case ServiceStatusEnum.SUCCESS: {
             return <Tag color={'green'}>Passed</Tag>;
           }
+          case ServiceStatusEnum.FAILED: {
+            return <Tag color='red'>Failed</Tag>;
+          }
           default: {
-            return <Tag>FAILED</Tag>;
+            return <Tag color={'gold'}>Pending</Tag>;
           }
         }
       }
@@ -44,7 +47,9 @@ function ServicePage() {
             ? record?.deployStatus === ServiceStatusEnum.WAIT
               ? ServiceStatusEnum.PENDING
               : ServiceStatusEnum.SUCCESS
-            : ServiceStatusEnum.WAIT;
+            : record?.buildStatus === ServiceStatusEnum.FAILED
+              ? ServiceStatusEnum.FAILED
+              : ServiceStatusEnum.WAIT;
         return <Pipeline pipeline={[record?.buildStatus, pushStatus, record?.deployStatus]} />;
       }
     },
@@ -69,7 +74,7 @@ function ServicePage() {
         dispatch(loadService(id));
         dispatch(loadServiceHistories(id));
       }
-    }, 10000);
+    }, 2000);
 
     return () => {
       clearInterval(timer);
@@ -96,7 +101,11 @@ function ServicePage() {
                 }
               }}
             >
-              {service?.domain ? `https://${service?.domain}.duongbd.online` : 'Waiting for deployment to be ready'}
+              {service?.domain
+                ? `https://${service?.domain}.duongbd.online`
+                : service?.status === ServiceStatusEnum.FAILED
+                  ? 'Failed to deploy app'
+                  : 'Waiting for deployment to be ready'}
             </Typography.Link>
           </Col>
           <Col xs={24} md={8}>

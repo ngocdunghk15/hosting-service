@@ -12,8 +12,8 @@ function Pipeline(props: PipelineProps) {
         const isLastEle = props?.pipeline.length - 1 === index;
         return (
           <div className={'flex items-center'} key={index}>
-            <StageStatus  status={status} />
-            {!isLastEle && <div >-</div>}
+            <StageStatus status={status} />
+            {!isLastEle && <div>-</div>}
           </div>
         );
       })}

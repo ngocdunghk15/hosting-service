@@ -17,7 +17,7 @@ function BadgeStatus(props: BadgeStatusProps) {
     case ServiceStatusEnum.PENDING: {
       return (
         <div>
-          <Badge status='processing' text='Processing' />
+          <Badge status='warning' text='Processing' />
         </div>
       );
     }
@@ -31,7 +31,7 @@ function BadgeStatus(props: BadgeStatusProps) {
     default: {
       return (
         <div>
-          <Badge status='default' text='Idle' />
+          <Badge status='warning' text='Processing' />
         </div>
       );
     }

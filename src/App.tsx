@@ -13,7 +13,7 @@ function App() {
   return (
     <Provider store={store}>
       {/*TODO: Loading app screen*/}
-      <PersistGate loading={<>Loading...</>} persistor={persistor}>
+      <PersistGate persistor={persistor}>
         <SnackbarProvider>
           <ThemeProvider>
             <Router>

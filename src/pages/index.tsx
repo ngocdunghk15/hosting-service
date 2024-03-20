@@ -166,10 +166,10 @@ export default function HomePage() {
         </Dropdown>
       </div>
       <Table
-        onRow={(record) => {
+        onRow={(_record) => {
           return {
             onClick: () => {
-              navigate(`/services/${record?._id}`);
+              // navigate(`/services/${record?._id}`);
             }
           };
         }}

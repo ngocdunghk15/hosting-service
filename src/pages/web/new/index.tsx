@@ -97,12 +97,16 @@ function WebNewPage() {
       }
 
       const response: any = await servicesService.buildAndDeploy(deployServiceDto as BuildAndDeployPayload);
-      setTimeout(() => {
-        setIsDelay(false);
-
-        navigate(`/services/${response?.data?.data?._id}`);
-        enqueueSnackbar('Create service successfully!', { variant: 'success' });
-      }, 2000);
+      const timer = setInterval(() => {
+        servicesService.getHistories(response?.data?.data?._id).then((res) => {
+          if (res?.data?.data.length) {
+            setIsDelay(false);
+            navigate(`/services/${response?.data?.data?._id}`);
+            clearInterval(timer);
+            enqueueSnackbar('Create service successfully!', { variant: 'success' });
+          }
+        });
+      }, 1000);
     } catch {
       /* empty */
       enqueueSnackbar('Failed to create service!', { variant: 'error' });
