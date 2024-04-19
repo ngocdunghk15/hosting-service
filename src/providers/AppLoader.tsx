@@ -7,12 +7,14 @@ import { useIsClient } from '~/hooks/useIsClient.ts';
 
 function AppLoader() {
   const dispatch = useAppDispatch();
+  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
+
   const getAccountInfoStatus = useAppSelector((state) => state.auth.account.status);
   const isClient = useIsClient();
 
   useEffect(() => {
     dispatch(getAccountInfo());
-  }, []);
+  }, [isLoggedIn]);
 
   console.log({ getAccountInfoStatus, isClient });
 

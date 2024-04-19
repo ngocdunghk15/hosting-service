@@ -110,6 +110,7 @@ function WebNewPage() {
     } catch {
       /* empty */
       enqueueSnackbar('Failed to create service!', { variant: 'error' });
+      setIsDelay(false);
     }
   };
 

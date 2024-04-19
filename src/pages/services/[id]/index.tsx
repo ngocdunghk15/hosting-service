@@ -1,22 +1,22 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
-import { Card, Col, Divider, Input, Layout, Row, Table, TableProps, Tag, Typography } from 'antd';
+import { Button, Input, message, Table, TableProps, Tag, Typography } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { useAppDispatch, useAppSelector } from '~/redux/store.ts';
-import { loadService, loadServiceHistories } from '~/redux/actions/services.action.ts';
+import { loadServiceHistories } from '~/redux/actions/services.action.ts';
 import { ServiceHistory } from '~/types/service.type.ts';
 import { ServiceStatusEnum, Status } from '~/enum/app.enum.ts';
 import Pipeline from '~/components/shared/Pipeline';
-import BadgeStatus from '~/components/shared/BadgeStatus';
+import { servicesService } from '~/services/services.service.ts';
 
 function ServicePage() {
-  const params = useParams();
   const isFirstLoad = useRef(true);
-  const id = params?.id;
-  const dispatch = useAppDispatch();
   const loadServiceHistoriesStatus = useAppSelector((state) => state.services.currentService.histories.status);
   const serviceHistories = useAppSelector((state) => state.services.currentService.histories.data);
+  const params = useParams();
+  const id = params?.id;
+  const dispatch = useAppDispatch();
   const service = useAppSelector((state) => state.services.currentService.data);
 
   const columns: TableProps<ServiceHistory>['columns'] = [
@@ -42,15 +42,15 @@ function ServicePage() {
       key: 'pipeline',
       title: 'Pipeline',
       render: (_, record) => {
-        const pushStatus =
-          record?.buildStatus === ServiceStatusEnum.SUCCESS
-            ? record?.deployStatus === ServiceStatusEnum.WAIT
-              ? ServiceStatusEnum.PENDING
-              : ServiceStatusEnum.SUCCESS
-            : record?.buildStatus === ServiceStatusEnum.FAILED
-              ? ServiceStatusEnum.FAILED
-              : ServiceStatusEnum.WAIT;
-        return <Pipeline pipeline={[record?.buildStatus, pushStatus, record?.deployStatus]} />;
+        // const pushStatus =
+        //   record?.buildStatus === ServiceStatusEnum.SUCCESS
+        //     ? record?.deployStatus === ServiceStatusEnum.WAIT
+        //       ? ServiceStatusEnum.PENDING
+        //       : ServiceStatusEnum.SUCCESS
+        //     : record?.buildStatus === ServiceStatusEnum.FAILED
+        //       ? ServiceStatusEnum.FAILED
+        //       : ServiceStatusEnum.WAIT;
+        return <Pipeline pipeline={[record?.buildStatus, record?.deployStatus]} />;
       }
     },
     {
@@ -61,9 +61,21 @@ function ServicePage() {
     }
   ];
 
+  const onRetry = async () => {
+    try {
+      await servicesService.retry(service?._id);
+      if (id) {
+        dispatch(loadServiceHistories(id)).then(() => {
+          message.info('Retrying to deploy this service...');
+        });
+      }
+    } catch {
+      message.error('Failed to re-deploy service!');
+    }
+  };
+
   useEffect(() => {
     if (id) {
-      dispatch(loadService(id));
       dispatch(loadServiceHistories(id)).finally(() => {
         isFirstLoad.current = false;
       });
@@ -71,7 +83,6 @@ function ServicePage() {
 
     const timer = setInterval(() => {
       if (id) {
-        dispatch(loadService(id));
         dispatch(loadServiceHistories(id));
       }
     }, 2000);
@@ -82,50 +93,21 @@ function ServicePage() {
   }, []);
 
   return (
-    <Layout>
-      <div className={'mb-4'}>
-        <Typography.Title level={3}>Manage deployments</Typography.Title>
-        <Typography.Text type={'secondary'}>Manage all your service deployments here.</Typography.Text>
-      </div>
-      <Card bordered={false}>
-        <Typography.Title level={5} style={{ color: '#bebebe' }}>
-          {`Service name: ${service?.name}`}
-        </Typography.Title>
-        <Row gutter={[16, 16]}>
-          <Col xs={24} md={8}>
-            <Typography>Domain:</Typography>
-            <Typography.Link
-              onClick={() => {
-                if (service?.domain) {
-                  window.open(`https://${service?.domain}.duongbd.online`, '_blank');
-                }
-              }}
-            >
-              {service?.domain
-                ? `https://${service?.domain}.duongbd.online`
-                : service?.status === ServiceStatusEnum.FAILED
-                  ? 'Failed to deploy app'
-                  : 'Waiting for deployment to be ready'}
-            </Typography.Link>
-          </Col>
-          <Col xs={24} md={8}>
-            <Typography>Status:</Typography>
-            <Typography>{<BadgeStatus status={service?.status} />}</Typography>
-          </Col>
-          <Col xs={24} md={8}>
-            <Typography>Last updated:</Typography>
-            <Typography>{new Date(service?.updatedAt).toLocaleString()}</Typography>
-          </Col>
-        </Row>
-      </Card>
-      <Divider className={'my-5'} />
-      <div className={'flex gap-8 mb-6'}>
+    <div>
+      <div className={'flex gap-4 mb-6 justify-between'}>
         <Input
+          style={{ maxWidth: 320 }}
           disabled={true}
           prefix={<FontAwesomeIcon icon={faMagnifyingGlass} />}
-          className={'flex-grow-1'}
           placeholder={'Search deployments...'}
         />
+        <div className={'flex items-center gap-4'}>
+          {service?.status === 'failed' && (
+            <Button icon={<FontAwesomeIcon icon={faRotateRight} />} onClick={onRetry}>
+              Retry
+            </Button>
+          )}
+        </div>
       </div>
       <Table
         loading={loadServiceHistoriesStatus === Status.PENDING && isFirstLoad.current}
@@ -135,7 +117,7 @@ function ServicePage() {
           pageSize: 10
         }}
       />
-    </Layout>
+    </div>
   );
 }
 

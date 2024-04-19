@@ -26,8 +26,8 @@ export default function AppRouting() {
             <Route path={'/services/*'} element={<ServicesRoutes />} />
           </Route>
         </Route>
-        <Route path={'/auth/*'} element={<AuthRoutes />} />;
       </Route>
+      <Route path={'/auth/*'} element={<AuthRoutes />} />;
     </Routes>
   );
 }

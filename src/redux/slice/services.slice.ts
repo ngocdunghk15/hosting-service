@@ -66,7 +66,7 @@ export const servicesSlice = createSlice({
         state.currentService.status = Status.PENDING;
       })
       .addCase(loadService.fulfilled, (state, action) => {
-        state.currentService.data = action?.payload;
+        state.currentService.data = action?.payload?.data;
         state.currentService.status = Status.FULFILLED;
       })
       .addCase(loadService.rejected, (state) => {

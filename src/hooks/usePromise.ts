@@ -8,8 +8,6 @@ const usePromise = (fn: CallbackFunctionVariadicAnyReturn) => {
   const [error, setError] = useState<any>(null);
   const [status, setStatus] = useState<Status>(Status.IDLE);
   const caller = async (args: any): Promise<any> => {
-    setData(null);
-    setError(null);
     setStatus(Status.PENDING);
     try {
       const response = await fn(args);
